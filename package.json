@@ -1,0 +1,16 @@
+{
+  "name": "backend_pokerhands",
+  "version": "1.0.0",
+  "description": "Repositório feito para a disciplina de Princípios de Desenvolvimento Web. Esse projeto busca consumir os arquivos gerados pelo software Hand2Note para disponibilizar ferramentas de análise de mãos de poker.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
