@@ -1,2 +1,3 @@
 # backend_pokerhands
-Repositório feito para a disciplina de Princípios de Desenvolvimento Web e que tem como finalidade extrair mãos de poker de arquivos para facilitar sua análise.
+Repositório feito para a disciplina de Princípios de Desenvolvimento Web.
+Esse projeto busca consumir os arquivos gerados pelo software Hand2Note para disponibilizar ferramentas de análise de mãos de poker.
