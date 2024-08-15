@@ -14,24 +14,120 @@ datasource db {
 }
 
 model User {
-  id String @id @default(uuid())
-  username String @unique
-  teams Team[] @relation("UserTeams")
-
-  TeamOwner TeamOwner?
-
+  id         String @id @default(uuid())
+  username   String @unique
+  sessions   Session[] 
+  teams      Team[] @relation("UserTeams") 
+  ownedTeams Team[] @relation("TeamOwner") 
 }
 
 model Team {
-  id String @id @default(uuid())
-  users User[] @relation("UserTeams")
-  TeamOwner TeamOwner?
+  id        String  @id @default(uuid())
+  users     User[]  @relation("UserTeams") 
+  ownerId   String  
+  owner     User    @relation("TeamOwner", fields: [ownerId], references: [id])
 }
 
-model TeamOwner {
-  id String @id @default(uuid())
-  team Team @relation(fields: [teamId], references: [id])
-  teamId String @unique
-  user User @relation(fields: [userId], references: [id])
-  userId String @unique
+model Session {
+  id          String    @id @default(uuid())
+  startTime   DateTime
+  endTime     DateTime
+  hands       Hand[]    // Relacionamento com as mãos jogadas durante a sessão
+  heroId      Int       // ID do jogador hero
+  hero        Player    @relation(fields: [heroId], references: [id]) // O jogador associado como herói
+  userId      String    // ID do usuário associado à sessão
+  user        User      @relation(fields: [userId], references: [id]) // Relacionamento com o usuário que criou a sessão
+}
+
+model Player {
+  id        Int       @id @default(autoincrement())
+  username  String
+  club_id   Int
+  sessions  Session[] // Relacionamento com as sessões em que o player foi o herói
+
+  Seat Seat[]
+}
+
+
+model Board {
+  id        Int      @id @default(autoincrement())
+  cards     String[] 
+  hand      Hand?    
+}
+
+model Hand {
+  id              Int       @id @default(autoincrement())
+  seats           Seat[]    
+  board           Board?    @relation(fields: [boardId], references: [id])
+  actions         Action[]  
+  table           Table     @relation(fields: [tableId], references: [id])
+  rake            Float
+  boardId         Int?      @unique
+  tableId         String
+
+  Session Session[]
+}
+
+model Action {
+  id              Int       @id @default(autoincrement())
+  seat            Seat      @relation(fields: [seatId], references: [id])
+  seatId          Int
+  type            ActionType
+  amount          Float?
+  stage           Stage     
+  hand            Hand      @relation(fields: [handId], references: [id])
+  handId          Int
+}
+
+enum Stage {
+  PREFLOP
+  FLOP
+  TURN
+  RIVER
+}
+
+
+model PlayerHand {
+  id        Int      @id @default(autoincrement())
+  cards     String[] 
+  seat      Seat     @relation(fields: [seatId], references: [id])
+  seatId    Int @unique
+}
+
+model Seat {
+  id         Int        @id @default(autoincrement())
+  seatNumber Int
+  playerId   Int
+  player     Player     @relation(fields: [playerId], references: [id])
+  stack      Float
+  isHero     Boolean
+  playerHand PlayerHand? 
+  hand       Hand        @relation(fields: [handId], references: [id])
+  handId     Int
+
+  Action Action[]
+}
+
+
+enum ActionType {
+  ANTE
+  SMALL_BLIND
+  BIG_BLIND
+  STRADDLE
+  FOLD
+  CHECK
+  CALL
+  BET
+  RAISE
+  SHOW
+}
+
+model Table {
+  id        String   @id @default(uuid())
+  maxSeats  Int
+  blinds    Float[]  
+  ante      Float
+  club_id   Int
+
+  hands     Hand[]   
 }
