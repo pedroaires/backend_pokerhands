@@ -53,13 +53,14 @@ model Player {
 model Board {
   id        Int      @id @default(autoincrement())
   cards     String[] 
-  hand      Hand?    
+  hand      Hand    @relation(fields: [handId], references: [id])
+  handId    Int    
 }
 
 model Hand {
   id              Int       @id @default(autoincrement())
   seats           Seat[]    
-  board           Board?    @relation(fields: [boardId], references: [id])
+  boards          Board[]    
   actions         Action[]  
   table           Table     @relation(fields: [tableId], references: [id])
   rake            Float
@@ -75,6 +76,7 @@ model Action {
   seatId          Int
   type            ActionType
   amount          Float?
+  cardsShown      String[]
   stage           Stage     
   hand            Hand      @relation(fields: [handId], references: [id])
   handId          Int
@@ -85,6 +87,23 @@ enum Stage {
   FLOP
   TURN
   RIVER
+  FIRST_SHOWDOWN
+  SECOND_SHOWDOWN
+  THIRD_SHOWDOWN
+}
+
+enum ActionType {
+  SMALL_BLIND
+  BIG_BLIND
+  ANTE
+  FOLD
+  CALL
+  BET
+  RAISE
+  CHECK
+  MUCK
+  WIN_POT
+  STRADDLE
 }
 
 
@@ -107,20 +126,6 @@ model Seat {
   handId     Int
 
   Action Action[]
-}
-
-
-enum ActionType {
-  ANTE
-  SMALL_BLIND
-  BIG_BLIND
-  STRADDLE
-  FOLD
-  CHECK
-  CALL
-  BET
-  RAISE
-  SHOW
 }
 
 model Table {
