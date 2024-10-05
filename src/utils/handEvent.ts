@@ -1,5 +1,3 @@
-import internal from "stream";
-
 export interface HandEvent {
     label: string;
     text?: string;
@@ -13,7 +11,7 @@ export interface PlayerActionData {
 }
 
 export class PlayerActionEvent implements HandEvent {
-    // Event for actions of the player, liker: fold, call, raise,
+    // Event for actions of the player, like: fold, call, raise,
     // posts blind, straddles, collected chips, etc.
     label = "PLAYER_ACTION";
     playerId: number;
@@ -29,6 +27,7 @@ export class PlayerActionEvent implements HandEvent {
     }
 
 }
+
 export interface BoardChangeData {
     label: string;
     new_board: string[];
@@ -37,7 +36,16 @@ export class BoardChangeEvent implements HandEvent {
     // when there is a change in the board, like flop, turn, river
     // first flop, second flop ...
     label = "BOARD_CHANGE";
-    constructor(public data: BoardChangeData) {}
+    changeType: string;
+    newBoard: string[];
+
+    constructor(
+        changeType: string,
+        newBoard: string[]
+    ) {
+        this.changeType = changeType;
+        this.newBoard = newBoard;
+    } 
 }
 export class UncalledBetEvent implements HandEvent {
     // when a player has an uncalled bet and the bet returns to him
