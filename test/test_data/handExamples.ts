@@ -37,6 +37,7 @@ export const handExamples = [
         Seat 4: 657898 (big blind) folded before Flop
         Seat 5: 636899 folded before Flop (didn't bet)
         Seat 6: 1176294 folded on the Flop
+        Hand ended at 2024/07/15 20:40:45
       `,
       expectedTable: {
         id: 'SPMA_14625_26268873',

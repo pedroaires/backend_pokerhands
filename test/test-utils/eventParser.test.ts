@@ -50,17 +50,7 @@ describe('PlayerActionParser', () => {
         const handText = handExamples[0].handText;
         const action = handText.split('\n')[9]; // 1165261: posts small blind ¥0.30
         const parser = new PlayerActionParser();
-        // console.log("Action: ", action);
-        var a = action.match(/^\s*(\d+):/);
-        // console.log("Match: ", a);
-        if (!a) {
-            throw new Error('Player ID not found in action string');
-        }
-        console.log("test:", parseInt(a[1], 10));
-        console.log("test2:", parseInt(a[1]) == 1165261);
-
         const event = parser.parse(action);
-        console.log("Event: ", event);
         expect(event.playerId).toBe(1165261);
     });
 
