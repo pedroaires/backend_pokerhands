@@ -50,13 +50,43 @@ export class BoardChangeEvent implements HandEvent {
 export class UncalledBetEvent implements HandEvent {
     // when a player has an uncalled bet and the bet returns to him
     label = "UNCALLED_BET";
-    constructor(public data: { playerId: number; amount: number }) {}
+    playerId: number;
+    amount: number;
+    constructor(
+        playerId: number,
+        amount: number
+    ) {
+        this.playerId = playerId;
+        this.amount = amount;
+    }
 }
 
 export class DealtCardsEvent implements HandEvent {
     // when a player receives cards
     label = "DEALT_CARDS";
-    constructor(public data: { playerId: number; cards: string[] }) {}
+    playerId: number;
+    cards: string[];
+    constructor(
+        playerId: number,
+        cards: string[]
+    ) {
+        this.playerId = playerId;
+        this.cards = cards;
+    }
+}
+
+export class ShowCardsEvent implements HandEvent {
+    // when a player shows cards
+    label = "SHOW_CARDS";
+    playerId: number;
+    cards: string[];
+    constructor(
+        playerId: number,
+        cards: string[]
+    ) {
+        this.playerId = playerId;
+        this.cards = cards;
+    }
 }
 
 export interface SeatSummary {
