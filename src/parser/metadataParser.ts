@@ -1,7 +1,7 @@
 interface HandMetadata {
     handId: string;
     gameType: string;
-    blinds: { smallBlind: string, bigBlind: string };
+    blinds: { smallBlind: string, bigBlind: string, ante: string | undefined };
     startDateTime: string;
     endDateTime: string;
     clubId: string;
@@ -17,6 +17,8 @@ export class HandMetadataParser {
         const tableInfoRegex = /Table 'ClubId:(\d+),Table:([^']+)' (\d+)-max Seat #(\d+)/;
         const playerRegex = /Seat (\d+): (\d+) \((¥[\d.]+) in chips\)/g;
         const endTimeRegex = /Hand ended at ([\d\/: ]+)/;
+        const anteRegex = /\((?:¥[\d.]+\/¥[\d.]+(?: - Ante (¥[\d.]+))?) CNY\)/;
+        const anteMatch = handText.match(anteRegex);
 
         // Extract hand metadata
         const handIdMatch = handText.match(handIdRegex);
@@ -40,6 +42,7 @@ export class HandMetadataParser {
             blinds: {
                 smallBlind: handIdMatch[2].match(/¥[\d.]+/g)?.[0] ?? '', // Small Blind
                 bigBlind: handIdMatch[2].match(/¥[\d.]+/g)?.[1] ?? '', // Big Blind
+                ante: anteMatch?.[1] ?? undefined // Extracts the ante if present
             },
             startDateTime: handIdMatch[3],
             endDateTime: endDateMatch[1],

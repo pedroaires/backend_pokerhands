@@ -1,5 +1,5 @@
 import { handExamples } from "../test_data/handExamples";
-import { BoardChangeParser, createParser, DealtCardsParser, PlayerActionParser, UncalledBetParser, ShowCardsParser } from "../../src/utils/eventParser"; 
+import { BoardChangeParser, createParser, DealtCardsParser, PlayerActionParser, UncalledBetParser, ShowCardsParser } from "../../src/parser/eventParser"; 
 
 describe('CreateEventParser', () => {
 
