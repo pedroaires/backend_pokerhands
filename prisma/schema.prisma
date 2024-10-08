@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,126 +8,95 @@ datasource db {
 }
 
 model User {
-  id         String @id @default(uuid())
-  username   String @unique
+  id         String  @id @default(uuid())
+  username   String  @unique
   password   String
-  sessions   Session[] 
-  teams      Team[] @relation("UserTeams") 
-  ownedTeams Team[] @relation("TeamOwner") 
+  teams      Team[]  @relation("UserTeams")
+  ownedTeams Team[]  @relation("TeamOwner")
+  hands      Hand[]  @relation("UserHands")  // The user owns these hands
 }
 
 model Team {
   id        String  @id @default(uuid())
-  users     User[]  @relation("UserTeams") 
-  ownerId   String  
+  users     User[]  @relation("UserTeams")
+  ownerId   String
   owner     User    @relation("TeamOwner", fields: [ownerId], references: [id])
 }
 
-model Session {
-  id          String    @id @default(uuid())
-  startTime   DateTime
-  endTime     DateTime
-  hands       Hand[]    // Relacionamento com as mãos jogadas durante a sessão
-  heroId      Int       // ID do jogador hero
-  hero        Player    @relation(fields: [heroId], references: [id]) // O jogador associado como herói
-  userId      String    // ID do usuário associado à sessão
-  user        User      @relation(fields: [userId], references: [id]) // Relacionamento com o usuário que criou a sessão
-}
-
 model Player {
-  id        Int       @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   username  String
   club_id   Int
-  sessions  Session[] // Relacionamento com as sessões em que o player foi o herói
-
-  Seat Seat[]
-}
-
-
-model Board {
-  id        Int      @id @default(autoincrement())
-  cards     String[] 
-  hand      Hand    @relation(fields: [handId], references: [id])
-  handId    Int    
+  hands     Hand[]   @relation("PlayerHands")
 }
 
 model Hand {
-  id              Int       @id @default(autoincrement())
-  seats           Seat[]    
-  boards          Board[]    
-  actions         Action[]  
-  table           Table     @relation(fields: [tableId], references: [id])
-  rake            Float
-  boardId         Int?      @unique
-  tableId         String
-
-  Session Session[]
+  id            String       @id @default(uuid())
+  startDateTime DateTime
+  endDateTime   DateTime
+  gameType      String
+  blinds        Json          // Will store smallBlind, bigBlind, and optional ante
+  tableId       String
+  clubId        Int
+  maxSeats      Int
+  buttonSeat    Int
+  players       Player[]      @relation("PlayerHands") // Players participating in the hand
+  events        HandEvent[]   @relation("HandEvents")  // List of events related to this hand
+  ownerId       String        // Owner of the hand
+  owner         User          @relation("UserHands", fields: [ownerId], references: [id])
 }
 
-model Action {
-  id              Int       @id @default(autoincrement())
-  seat            Seat      @relation(fields: [seatId], references: [id])
-  seatId          Int
-  type            ActionType
-  amount          Float?
-  cardsShown      String[]
-  stage           Stage     
-  hand            Hand      @relation(fields: [handId], references: [id])
-  handId          Int
+model HandEvent {
+  id        String       @id @default(uuid())
+  handId    String
+  hand      Hand         @relation("HandEvents", fields: [handId], references: [id])
+  eventType String      
+  eventData Json         // Will store event-specific data, like player actions, dealt cards, etc.
+  playerActionEvent PlayerActionEvent?
+  boardChangeEvent  BoardChangeEvent?
+  uncalledBetEvent  UncalledBetEvent?
+  dealtCardsEvent   DealtCardsEvent?
+  showCardsEvent    ShowCardsEvent? 
 }
 
-enum Stage {
-  PREFLOP
-  FLOP
-  TURN
-  RIVER
-  FIRST_SHOWDOWN
-  SECOND_SHOWDOWN
-  THIRD_SHOWDOWN
+model PlayerActionEvent {
+  id           String  @id @default(uuid())
+  playerId     Int
+  actionType   String
+  amount       Float
+  isAllIn      Boolean
+  eventId      String @unique
+  handEvent    HandEvent @relation(fields: [eventId], references: [id])
 }
 
-enum ActionType {
-  SMALL_BLIND
-  BIG_BLIND
-  ANTE
-  FOLD
-  CALL
-  BET
-  RAISE
-  CHECK
-  MUCK
-  WIN_POT
-  STRADDLE
+model BoardChangeEvent {
+  id           String  @id @default(uuid())
+  changeType   String
+  newBoard     String[]
+  eventId      String @unique
+  handEvent    HandEvent @relation(fields: [eventId], references: [id])
 }
 
-
-model PlayerHand {
-  id        Int      @id @default(autoincrement())
-  cards     String[] 
-  seat      Seat     @relation(fields: [seatId], references: [id])
-  seatId    Int @unique
+model UncalledBetEvent {
+  id        String  @id @default(uuid())
+  playerId  Int
+  amount    Float
+  eventId   String @unique
+  handEvent HandEvent @relation(fields: [eventId], references: [id])
 }
 
-model Seat {
-  id         Int        @id @default(autoincrement())
-  seatNumber Int
-  playerId   Int
-  player     Player     @relation(fields: [playerId], references: [id])
-  stack      Float
-  isHero     Boolean
-  playerHand PlayerHand? 
-  hand       Hand        @relation(fields: [handId], references: [id])
-  handId     Int
-
-  Action Action[]
+model DealtCardsEvent {
+  id        String  @id @default(uuid())
+  playerId  Int
+  cards     String[]
+  eventId   String @unique
+  handEvent HandEvent @relation(fields: [eventId], references: [id])
 }
 
-model Table {
-  id        String   @id @default(uuid())
-  maxSeats  Int
-  blinds    Float[]  
-  ante      Float
-  club_id   Int
-
-  hands     Hand[]   
+model ShowCardsEvent {
+  id        String  @id @default(uuid())
+  playerId  Int
+  cards     String[]
+  eventId   String @unique
+  handEvent HandEvent @relation(fields: [eventId], references: [id])
 }

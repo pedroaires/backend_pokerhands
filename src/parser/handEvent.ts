@@ -88,25 +88,3 @@ export class ShowCardsEvent implements HandEvent {
         this.cards = cards;
     }
 }
-
-export interface SeatSummary {
-    seatNumber: number; // Seat number (1-6 in this case)
-    playerId: number; // Unique player identifier
-    result: string; // "folded", "collected", "shoed"
-    resultStage: string; // "flop", "turn", "river", etc.
-    role: string; // "small blind", "big blind", "button", etc.
-    collectedAmount: number; // Amount collected by the player if they won
-    cards: string[]; // Cards held by the player
-}
-export interface Board{
-    cards: string[];
-}
-export interface SummaryData {
-    totalPot: number,
-    rake: number,
-    boards: Board[],
-    seatsResults: SeatSummary[]
-    startDate: string,
-    endDate: string,
-    
-}
