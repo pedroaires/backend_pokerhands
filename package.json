@@ -4,13 +4,42 @@
   "description": "Repositório feito para a disciplina de Princípios de Desenvolvimento Web. Esse projeto busca consumir os arquivos gerados pelo software Hand2Note para disponibilizar ferramentas de análise de mãos de poker.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "test": "jest",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "ts-node src/server.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.19.2"
+    "@prisma/client": "^5.18.0",
+    "braces": "^3.0.3",
+    "chokidar": "^3.6.0",
+    "express": "^4.19.2",
+    "lite-server": "^2.6.1"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.14.11",
+    "@typescript-eslint/eslint-plugin": "^7.16.1",
+    "@typescript-eslint/parser": "^7.16.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "gulp": "^5.0.0",
+    "gulp-nodemon": "^2.2.1",
+    "gulp-tslint": "^8.1.4",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "jest": "^29.7.0",
+    "prettier": "^3.3.3",
+    "prisma": "^5.18.0",
+    "ts-jest": "^29.2.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.3"
+  },
+  "directories": {
+    "test": "test"
   }
 }

@@ -1,0 +1,144 @@
+
+SupremaPoker Hand #2626876700668:  5 Card Omaha Pot Limit (¥0.30/¥0.60 CNY) - 2024/07/16 2:08:21 UTC
+Table 'ClubId:14625,Table:SPMA_14625_26268767' 6-max Seat #3 is the button
+Seat 1: 1160594 (¥109.80 in chips)
+Seat 2: 334441 (¥81 in chips)
+Seat 3: 1171218 (¥144.70 in chips)
+Seat 4: 905459 (¥41.45 in chips)
+Seat 6: 657898 (¥60 in chips)
+905459: posts small blind ¥0.30
+657898: posts big blind ¥0.60
+*** HOLE CARDS ***
+Dealt to 657898 [4d 3s 8h 6c Jd]
+1160594: raises ¥1.50 to ¥2.10
+334441: raises ¥1.50 to ¥3.60
+1171218: folds
+905459: folds
+657898: folds
+1160594: calls ¥1.50
+*** FLOP *** [9d 4c Jc] {Rake: ¥0}
+1160594: checks
+334441: checks
+*** TURN *** [9d 4c Jc] [2h] {Rake: ¥0}
+1160594: bets ¥4.05
+334441: calls ¥4.05
+*** RIVER *** [9d 4c Jc 2h] [9h] {Rake: ¥0}
+1160594: checks
+334441: checks
+*** SHOW DOWN ***
+1160594: mucks hand
+334441: mucks hand
+1160594 collected ¥14.75 from pot
+*** SUMMARY ***
+Total pot ¥16.20 | Rake ¥1.45
+Board [9d 4c Jc 2h 9h]
+Seat 1: 1160594 showed [5c 5s 7h Ac Ad]
+Seat 2: 334441 mucked
+Seat 3: 1171218 (button) folded before Flop (didn't bet)
+Seat 4: 905459 (small blind) folded before Flop
+Seat 6: 657898 (big blind) folded before Flop
+Hand ended at 2024/07/16 2:09:44
+
+SupremaPoker Hand #2626876700669:  5 Card Omaha Pot Limit (¥0.30/¥0.60 CNY) - 2024/07/16 2:09:54 UTC
+Table 'ClubId:14625,Table:SPMA_14625_26268767' 6-max Seat #4 is the button
+Seat 1: 1160594 (¥116.90 in chips)
+Seat 2: 334441 (¥73.35 in chips)
+Seat 3: 1171218 (¥144.70 in chips)
+Seat 4: 905459 (¥41.15 in chips)
+Seat 6: 657898 (¥59.40 in chips)
+657898: posts small blind ¥0.30
+1160594: posts big blind ¥0.60
+334441: posts straddle ¥1.20
+*** HOLE CARDS ***
+Dealt to 657898 [5d 4h 4d 3c Kh]
+1171218: folds
+905459: folds
+657898: folds
+1160594: calls ¥0.60
+334441: checks
+*** FLOP *** [2c Th Ad] {Rake: ¥0}
+1160594: checks
+334441: checks
+*** TURN *** [2c Th Ad] [7c] {Rake: ¥0}
+1160594: checks
+334441: checks
+*** RIVER *** [2c Th Ad 7c] [7s] {Rake: ¥0}
+1160594: checks
+334441: checks
+*** SHOW DOWN ***
+1160594: mucks hand
+334441: mucks hand
+1160594 collected ¥2.70 from pot
+*** SUMMARY ***
+Total pot ¥2.70 | Rake ¥0
+Board [2c Th Ad 7c 7s]
+Seat 1: 1160594 (big blind) showed [Ks Kc 4s 9h 5s]
+Seat 2: 334441 (straddle) mucked
+Seat 3: 1171218 folded before Flop (didn't bet)
+Seat 4: 905459 (button) folded before Flop (didn't bet)
+Seat 6: 657898 (small blind) folded before Flop
+Hand ended at 2024/07/16 2:10:30
+
+SupremaPoker Hand #2626876700670:  5 Card Omaha Pot Limit (¥0.30/¥0.60 CNY) - 2024/07/16 2:10:38 UTC
+Table 'ClubId:14625,Table:SPMA_14625_26268767' 6-max Seat #6 is the button
+Seat 1: 1160594 (¥118.40 in chips)
+Seat 2: 334441 (¥72.15 in chips)
+Seat 3: 1171218 (¥144.70 in chips)
+Seat 4: 905459 (¥41.15 in chips)
+Seat 6: 657898 (¥59.10 in chips)
+1160594: posts small blind ¥0.30
+334441: posts big blind ¥0.60
+*** HOLE CARDS ***
+Dealt to 657898 [3d 8h Jd 8s 9d]
+1171218: raises ¥1.50 to ¥2.10
+905459: raises ¥4.20 to ¥6.30
+657898: folds
+1160594: folds
+334441: folds
+1171218: calls ¥4.20
+*** FLOP *** [As 4c 5s] {Rake: ¥0}
+1171218: checks
+905459: bets ¥6.75
+1171218: calls ¥6.75
+*** TURN *** [As 4c 5s] [3s] {Rake: ¥0}
+1171218: bets ¥27
+905459: folds
+Uncalled bet (¥27) returned to 1171218
+1171218 collected ¥25.05 from pot
+*** SUMMARY ***
+Total pot ¥27 | Rake ¥1.95
+Board [As 4c 5s 3s]
+Seat 1: 1160594 (small blind) folded before Flop
+Seat 2: 334441 (big blind) folded before Flop
+Seat 3: 1171218 collected (¥25.05)
+Seat 4: 905459 folded on the Turn
+Seat 6: 657898 (button) folded before Flop (didn't bet)
+Hand ended at 2024/07/16 2:11:40
+
+SupremaPoker Hand #2626876700671:  5 Card Omaha Pot Limit (¥0.30/¥0.60 CNY) - 2024/07/16 2:11:48 UTC
+Table 'ClubId:14625,Table:SPMA_14625_26268767' 6-max Seat #1 is the button
+Seat 1: 1160594 (¥118.10 in chips)
+Seat 3: 1171218 (¥156.70 in chips)
+Seat 4: 905459 (¥28.10 in chips)
+Seat 6: 657898 (¥59.10 in chips)
+1171218: posts big blind ¥0.60
+*** HOLE CARDS ***
+Dealt to 657898 [Ks Ts 6h Th Ad]
+905459: folds
+657898: raises ¥1.20 to ¥1.80
+1160594: folds
+1171218: calls ¥1.20
+*** FLOP *** [Td Ac 2h] {Rake: ¥0}
+1171218: checks
+657898: bets ¥1.80
+1171218: folds
+Uncalled bet (¥1.80) returned to 657898
+657898 collected ¥3.40 from pot
+*** SUMMARY ***
+Total pot ¥3.60 | Rake ¥0.20
+Board [Td Ac 2h]
+Seat 1: 1160594 (button) folded before Flop (didn't bet)
+Seat 3: 1171218 (big blind) folded on the Flop
+Seat 4: 905459 folded before Flop (didn't bet)
+Seat 6: 657898 collected (¥3.40)
+Hand ended at 2024/07/16 2:12:22
