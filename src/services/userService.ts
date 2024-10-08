@@ -10,4 +10,20 @@ export class UserService {
         });
         return user;
     }
+
+    getAllUsers(): any {
+        return [];
+    }
+
+    getUserById(id: string): any {
+        return {};
+    }
+
+    updateUser(id: string, userData: {username: string, password: string}): any {
+        return {};
+    }
+
+    deleteUser(id: string): any {
+        return {};
+    }
 }
