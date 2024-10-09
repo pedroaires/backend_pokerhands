@@ -1,6 +1,5 @@
 import { promises as fs } from 'fs';
 import { PrismaClient, Hand } from '@prisma/client';
-// import type * as Prisma from '@prisma/client';
 
 export class HandService {
     async processHandFile(file: Express.Multer.File, userId: string): Promise<string> {

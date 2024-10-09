@@ -33,6 +33,9 @@ app.delete("/users/:id", (req, res) => userController.deleteUser(req, res));    
 
 // Define the file upload route
 app.post("/hands/upload/:userId", upload.single('file'), (req, res) => handController.uploadHandFile(req, res));
+app.get("/hands/:userId", (req, res) => handController.getHands(req, res));
+app.get("/hands/:userId/:handId", (req, res) => handController.getHandById(req, res));
+app.delete("/hands/:handId", (req, res) => handController.deleteHand(req, res));
 
   
 
