@@ -1,11 +1,11 @@
 // src/errors/errorHandler.ts
 import { Request, Response, NextFunction } from 'express';
-import { NotFoundError } from './customErrors';
+import { UserError } from './userError';
 import { APIError } from './apiError';
 
 export const errorHandler = (err: APIError, req: Request, res: Response, next: NextFunction) => {
-    if (err instanceof NotFoundError) {
-        return res.status(404).json({ message: err.message });
+    if (err instanceof UserError) {
+        return res.status(err.statusCode).json({ message: err.message });
     }
 
     if (err.isOperational) {
@@ -14,10 +14,10 @@ export const errorHandler = (err: APIError, req: Request, res: Response, next: N
             message: err.message,
         });
     }
-        // For programming or unknown errors
+    // For programming or unknown errors
     res.status(500).json({
         status: 'error',
-        message: 'Something went wrong!',
+        message: 'Internal Server Error',
     });
 
 };

@@ -41,7 +41,6 @@ export class UserController {
     async updateUser(req: Request, res: Response) {
         const { id } = req.params;
         const { username, password } = req.body;
-
         if (!username) {
             res.status(400).send({ message: 'Missing username' });
             return;

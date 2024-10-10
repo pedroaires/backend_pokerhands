@@ -7,6 +7,7 @@ services:
     - pgdata:/var/lib/postgresql/data
    environment:
      POSTGRES_PASSWORD: pokerhands_password
+     POSTGRES_DB: pokerhands_db
    ports:
      - 5432:5432
    logging:

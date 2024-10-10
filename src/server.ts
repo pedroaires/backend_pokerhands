@@ -30,11 +30,16 @@ const userController = new UserController(new UserService());
 const handController = new HandController(new HandService());
 
 
-app.post("/users", asyncWrapper((req: Request, res: Response) => userController.registerUser(req, res)));         // Create
-app.get("/users", asyncWrapper((req: Request, res: Response) => userController.getAllUsers(req, res)));           // Read all
-app.get("/users/:id", asyncWrapper((req: Request, res: Response) => userController.getUserById(req, res)));       // Read by ID
-app.put("/users/:id", asyncWrapper((req: Request, res: Response) => userController.updateUser(req, res)));        // Update
-app.delete("/users/:id", asyncWrapper((req: Request, res: Response) => userController.deleteUser(req, res)));     // Delete
+app.post("/users", asyncWrapper((req: Request, res: Response) => userController.registerUser(req, res)));
+
+app.get("/users", asyncWrapper((req: Request, res: Response) => userController.getAllUsers(req, res)));
+
+app.get("/users/:id", asyncWrapper((req: Request, res: Response) => userController.getUserById(req, res)));
+
+app.put("/users/:id", asyncWrapper((req: Request, res: Response) => userController.updateUser(req, res)));
+
+app.delete("/users/:id", asyncWrapper((req: Request, res: Response) => userController.deleteUser(req, res)));
+
 
 // Define the file upload route
 app.post("/hands/upload/:userId", upload.single('file'), asyncWrapper((req: Request, res: Response) => handController.uploadHandFile(req, res)));

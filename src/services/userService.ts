@@ -1,5 +1,5 @@
 import { PrismaClient, User  } from "@prisma/client";
-import { NotFoundError } from "../errors/customErrors";
+import { UserAlreadyExistsError, UserNotFoundError } from "../errors/userError";
 export class UserService {
     private prisma: PrismaClient;
     
@@ -12,7 +12,7 @@ export class UserService {
             where: { username: userData.username }
         });
         if (existingUser) {
-            throw new Error('User with username: ' + userData.username + ' already exists');
+            throw new UserAlreadyExistsError(userData.username);
         }
 
         const user = this.prisma.user.create({
@@ -45,7 +45,7 @@ export class UserService {
         });
 
         if (!existingUser) {
-            throw new NotFoundError('User with id: ' + id + ' does not exist');
+            throw new UserNotFoundError(id);
         }
         const user = this.prisma.user.update({
             where: {
@@ -59,14 +59,14 @@ export class UserService {
         return user;
     }
 
-    deleteUser(id: string): Promise<User> {
-        const existingUser = this.prisma.user.findUnique({
+    async deleteUser(id: string): Promise<User> {
+        const existingUser = await this.prisma.user.findUnique({
             where: { id: id }
         });
         if (!existingUser) {
-            throw new NotFoundError('User with id: ' + id + ' does not exist');
+            throw new UserNotFoundError(id);
         }
-        const user = this.prisma.user.delete({
+        const user = await this.prisma.user.delete({
         where: {
             id: id
         }
