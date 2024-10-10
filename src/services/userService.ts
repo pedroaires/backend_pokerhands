@@ -36,6 +36,9 @@ export class UserService {
                 id: id
             }
         });
+        if (!user) {
+            throw new UserNotFoundError(id);
+        }
         return user;
     }
 
