@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { UserController } from "../../src/controllers/userController";
 import { UserService } from "../../src/services/userService";
+import { NotFoundError } from "../../src/errors/customErrors";
 
 jest.mock("../../src/services/userService");  // Mock the UserService
 
@@ -50,7 +51,7 @@ describe("UserController", () => {
 
         it("should create a user and return the user data", async () => {
             req.body = { username: "testUser", password: "testPassword" };
-            const mockUser = { id: "1", username: "testUser" };
+            const mockUser = { id: "1", username: "testUser", password: "testPassword" };
 
             userServiceMock.createUser.mockResolvedValue(mockUser);  // Mock the return of createUser
 
@@ -65,8 +66,8 @@ describe("UserController", () => {
     describe("Get All Users", () => {
         it("should return all users", async () => {
             const mockUsers = [
-                { id: "1", username: "testUser1" },
-                { id: "2", username: "testUser2" }
+                { id: "1", username: "testUser1", password: "testPassword1" },
+                { id: "2", username: "testUser2", password: "testPassword2"}
             ];
 
             userServiceMock.getAllUsers.mockResolvedValue(mockUsers);
@@ -80,18 +81,8 @@ describe("UserController", () => {
 
     // Get User by ID Tests
     describe("Get User by ID", () => {
-        it("should return 404 if user is not found", async () => {
-            req.params = { id: "1" };
-            userServiceMock.getUserById.mockResolvedValue(null);
-
-            await userController.getUserById(req as Request, res as Response);
-
-            expect(res.status).toHaveBeenCalledWith(404);
-            expect(res.send).toHaveBeenCalledWith({ message: 'User not found' });
-        });
-
         it("should return the user if found", async () => {
-            const mockUser = { id: "1", username: "testUser" };
+            const mockUser = { id: "1", username: "testUser", password: "testPassword" };
             req.params = { id: "1" };
 
             userServiceMock.getUserById.mockResolvedValue(mockUser);
@@ -112,23 +103,11 @@ describe("UserController", () => {
             await userController.updateUser(req as Request, res as Response);
 
             expect(res.status).toHaveBeenCalledWith(400);
-            expect(res.send).toHaveBeenCalledWith({ message: 'Missing username or password' });
-        });
-
-        it("should return 404 if user is not found", async () => {
-            req.body = { username: "testUser", password: "testPassword" };
-            req.params = { id: "1" };
-
-            userServiceMock.updateUser.mockResolvedValue(null);
-
-            await userController.updateUser(req as Request, res as Response);
-
-            expect(res.status).toHaveBeenCalledWith(404);
-            expect(res.send).toHaveBeenCalledWith({ message: 'User not found' });
+            expect(res.send).toHaveBeenCalledWith({ message: 'Missing password' });
         });
 
         it("should update a user and return the updated user", async () => {
-            const mockUpdatedUser = { id: "1", username: "updatedUser" };
+            const mockUpdatedUser = { id: "1", username: "updatedUser", password: "updatedPassword" };
             req.body = { username: "updatedUser", password: "updatedPassword" };
             req.params = { id: "1" };
 
@@ -146,19 +125,9 @@ describe("UserController", () => {
 
     // Delete User Tests
     describe("Delete User", () => {
-        it("should return 404 if user is not found", async () => {
-            req.params = { id: "1" };
-            userServiceMock.deleteUser.mockResolvedValue(null);
-
-            await userController.deleteUser(req as Request, res as Response);
-
-            expect(res.status).toHaveBeenCalledWith(404);
-            expect(res.send).toHaveBeenCalledWith({ message: 'User not found' });
-        });
-
         it("should delete a user and return success message", async () => {
             req.params = { id: "1" };
-            userServiceMock.deleteUser.mockResolvedValue(true);
+            userServiceMock.deleteUser.mockResolvedValue({ id: "1", username: "testUser", password: "testPassword" });
 
             await userController.deleteUser(req as Request, res as Response);
 

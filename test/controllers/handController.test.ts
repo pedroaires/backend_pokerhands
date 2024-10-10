@@ -40,23 +40,6 @@ describe("HandController", () => {
             expect(res.json).toHaveBeenCalledWith({ error: 'No file uploaded' });
         });
 
-        it("should return 500 if there is an error during file processing", async () => {
-            req.params = { userId: "1" };
-            req.file = {
-                originalname: "test.txt",
-                path: "/uploads/test.txt",
-                filename: "test.txt"
-            } as Express.Multer.File;
-
-            handServiceMock.processHandFile.mockRejectedValue(new Error("File processing error"));
-
-            await handController.uploadHandFile(req as Request, res as Response);
-
-            expect(handServiceMock.processHandFile).toHaveBeenCalledWith(req.file, "1");
-            expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.json).toHaveBeenCalledWith({ error: 'Failed to upload file' });
-        });
-
         it("should upload a file and return success message", async () => {
             req.params = { userId: "1" };
             req.file = {
@@ -79,16 +62,6 @@ describe("HandController", () => {
 
     // Tests for getHands
     describe("getHands", () => {
-        it("should return 500 if there is an error during hand retrieval", async () => {
-            req.params = { userId: "1" };
-            handServiceMock.getHandsByUser.mockRejectedValue(new Error("Error retrieving hands"));
-
-            await handController.getHands(req as Request, res as Response);
-
-            expect(handServiceMock.getHandsByUser).toHaveBeenCalledWith("1");
-            expect(res.status).toHaveBeenCalledWith(500);
-            expect(res.json).toHaveBeenCalledWith({ error: "Failed to retrieve hands" });
-        });
 
         it("should return all hands for a specific user", async () => {
             req.params = { userId: "1" };

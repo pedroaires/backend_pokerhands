@@ -5,6 +5,8 @@ import { UserController } from './controllers/userController';
 import { UserService } from './services/userService';
 import { HandController } from './controllers/handController';
 import { HandService } from './services/handService';
+import { errorHandler } from './errors/errorHandler';
+import { asyncWrapper } from './utils/asyncWrapper';
 
 const app = express();
 const port = 3000;
@@ -23,19 +25,22 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+
 const userController = new UserController(new UserService());
 const handController = new HandController(new HandService());
-app.post("/users", (req, res) => userController.registerUser(req, res));         // Create
-app.get("/users", (req, res) => userController.getAllUsers(req, res));           // Read all
-app.get("/users/:id", (req, res) => userController.getUserById(req, res));       // Read by ID
-app.put("/users/:id", (req, res) => userController.updateUser(req, res));        // Update
-app.delete("/users/:id", (req, res) => userController.deleteUser(req, res));     // Delete
+
+
+app.post("/users", asyncWrapper((req: Request, res: Response) => userController.registerUser(req, res)));         // Create
+app.get("/users", asyncWrapper((req: Request, res: Response) => userController.getAllUsers(req, res)));           // Read all
+app.get("/users/:id", asyncWrapper((req: Request, res: Response) => userController.getUserById(req, res)));       // Read by ID
+app.put("/users/:id", asyncWrapper((req: Request, res: Response) => userController.updateUser(req, res)));        // Update
+app.delete("/users/:id", asyncWrapper((req: Request, res: Response) => userController.deleteUser(req, res)));     // Delete
 
 // Define the file upload route
-app.post("/hands/upload/:userId", upload.single('file'), (req, res) => handController.uploadHandFile(req, res));
-app.get("/hands/:userId", (req, res) => handController.getHands(req, res));
-app.get("/hands/:userId/:handId", (req, res) => handController.getHandById(req, res));
-app.delete("/hands/:handId", (req, res) => handController.deleteHand(req, res));
+app.post("/hands/upload/:userId", upload.single('file'), asyncWrapper((req: Request, res: Response) => handController.uploadHandFile(req, res)));
+app.get("/hands/:userId", asyncWrapper((req: Request, res: Response) => handController.getHands(req, res)));
+app.get("/hands/:userId/:handId", asyncWrapper((req: Request, res: Response) => handController.getHandById(req, res)));
+app.delete("/hands/:handId", asyncWrapper((req: Request, res: Response) => handController.deleteHand(req, res)));
 
   
 

@@ -19,72 +19,53 @@ export class UserController {
             res.status(400).send({ message: 'Missing Password' });
             return;
         }
-
-        try {
-            const user = await this.userService.createUser({ username, password });
-            res.status(201).send({ message: 'User registered', user });
-        } catch (error) {
-            res.status(500).send({ message: 'Error creating user', error });
-        }
+        const user = await this.userService.createUser({ username, password });
+        
+        res.status(201).send({ message: 'User registered', user });
+    
     }
 
     async getAllUsers(req: Request, res: Response) {
-        try {
-            const users = await this.userService.getAllUsers();
-            res.send(users);
-        } catch (error) {
-            res.status(500).send({ message: 'Error fetching users', error });
-        }
+
+        const users = await this.userService.getAllUsers();
+        res.send(users);
+  
     }
 
     async getUserById(req: Request, res: Response) {
         const { id } = req.params;
-        try {
-            const user = await this.userService.getUserById(id);
-            if (!user) {
-                res.status(404).send({ message: 'User not found' });
-                return;
-            }
-            res.send(user);
-        } catch (error) {
-            res.status(500).send({ message: 'Error fetching user', error });
-        }
+        const user = await this.userService.getUserById(id);
+        res.send(user);
     }
 
     async updateUser(req: Request, res: Response) {
         const { id } = req.params;
         const { username, password } = req.body;
 
-        if (!username || !password) {
-            res.status(400).send({ message: 'Missing username or password' });
+        if (!username) {
+            res.status(400).send({ message: 'Missing username' });
             return;
         }
 
-        try {
-            const updatedUser = await this.userService.updateUser(id, { username, password });
-            if (!updatedUser) {
-                res.status(404).send({ message: 'User not found' });
-                return;
-            }
-            res.send({ message: 'User updated', user: updatedUser });
-        } catch (error) {
-            res.status(500).send({ message: 'Error updating user', error });
+        if (!password) {
+            res.status(400).send({ message: 'Missing password' });
+            return;
         }
+
+        const updatedUser = await this.userService.updateUser(id, { username, password });
+    
+        return res.send({ message: 'User updated', user: updatedUser });
     }
 
 
     async deleteUser(req: Request, res: Response) {
         const { id } = req.params;
-        try {
-            const deletedUser = await this.userService.deleteUser(id);
-            if (!deletedUser) {
-                res.status(404).send({ message: 'User not found' });
-                return;
-            }
-            res.send({ message: 'User deleted' });
-        } catch (error) {
-            res.status(500).send({ message: 'Error deleting user', error });
+        const deletedUser = await this.userService.deleteUser(id);
+        if (!deletedUser) {
+            res.status(404).send({ message: 'User not found' });
+            return;
         }
+        res.send({ message: 'User deleted' });
     }
 
 
