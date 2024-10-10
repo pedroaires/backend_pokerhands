@@ -1,5 +1,12 @@
 import express, { Request, Response } from 'express';
-import { RegisterUserController } from './controllers/registerUserController';
+import multer from 'multer';
+import path from 'path';
+import { UserController } from './controllers/userController';
+import { UserService } from './services/userService';
+import { HandController } from './controllers/handController';
+import { HandService } from './services/handService';
+import { errorHandler } from './errors/errorHandler';
+import { asyncWrapper } from './utils/asyncWrapper';
 
 const app = express();
 const port = 3000;
@@ -7,58 +14,35 @@ const port = 3000;
 
 app.use(express.json());
 
-const registerUserController = new RegisterUserController();
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        // Use an absolute path for the uploads directory
+        cb(null, path.join(__dirname, 'uploads'));  // Resolve absolute path using __dirname
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);  // Unique filename
+    }
+});
 
-app.post('/register', registerUserController.handle);
+const upload = multer({ storage });
+
+const userController = new UserController(new UserService());
+const handController = new HandController(new HandService());
 
 
-// app.get('/', (req: Request, res: Response) => {
-//     res.send('Hello, world!');
-// });
+app.post("/users", asyncWrapper((req: Request, res: Response) => userController.registerUser(req, res)));         // Create
+app.get("/users", asyncWrapper((req: Request, res: Response) => userController.getAllUsers(req, res)));           // Read all
+app.get("/users/:id", asyncWrapper((req: Request, res: Response) => userController.getUserById(req, res)));       // Read by ID
+app.put("/users/:id", asyncWrapper((req: Request, res: Response) => userController.updateUser(req, res)));        // Update
+app.delete("/users/:id", asyncWrapper((req: Request, res: Response) => userController.deleteUser(req, res)));     // Delete
 
-// interface Hand {
-//     id: number;
-//     [key: string]: any;
-// }
-// let hands: Hand[] = [];
+// Define the file upload route
+app.post("/hands/upload/:userId", upload.single('file'), asyncWrapper((req: Request, res: Response) => handController.uploadHandFile(req, res)));
+app.get("/hands/:userId", asyncWrapper((req: Request, res: Response) => handController.getHands(req, res)));
+app.get("/hands/:userId/:handId", asyncWrapper((req: Request, res: Response) => handController.getHandById(req, res)));
+app.delete("/hands/:handId", asyncWrapper((req: Request, res: Response) => handController.deleteHand(req, res)));
 
-// app.get('/hands', (req: Request, res: Response) => {
-//     res.send({"hands": hands});
-// });
-
-// app.post('/hands', (req: Request, res: Response) => {
-//     req.body.id = hands.length + 1;
-//     hands.push(req.body);
-//     res.send({"hands": hands});
-// });
-
-// app.put('/hands/:id', (req: Request, res: Response) => {
-//     let id = Number(req.params.id);
-//     let handIndex = hands.findIndex(hand => hand.id === id);
-//     if (handIndex === -1) {
-//         res.status(404).send({ message: 'Hand not found' });
-//         return;
-//     }
-
-//     hands[handIndex] = {
-//         id: hands[handIndex].id,
-//         ...req.body
-//     };
-
-//     res.send({ "hands": hands });
-// });
-
-// app.delete('/hands/:id', (req: Request, res: Response) => {
-//     let id = Number(req.params.id);
-//     let hand = hands.find(hand => hand.id === id);
-//     if (hand) {
-//         hands.splice(hands.indexOf(hand), 1);
-//         res.send({"hands": hands});
-//     }
-//     else {
-//         res.status(404).send({ message: 'Hand not found' });
-//     }
-// });
+  
 
 app.listen(port, () => {
     console.log(`Servidor rodando em http://localhost:${port}`);
