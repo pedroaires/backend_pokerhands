@@ -28,14 +28,17 @@ export class HandController {
         return res.json({ hands });
     }
 
-    async getHandById(req: Request, res: Response): Promise<Response> {
+    async getUserHandById(req: Request, res: Response): Promise<Response> {
     
-        const { handId } = req.params;
-        const hand = await this.handService.getHandById(handId);
-
-        if (!hand) {
-            return res.status(404).json({ error: 'Hand not found' });
+        const { handId, userId } = req.params;
+        if (!userId) {
+            return res.status(400).json({ error: 'No user ID provided' });
         }
+
+        if (!handId) {
+            return res.status(400).json({ error: 'No hand ID provided' });
+        }
+        const hand = await this.handService.getHandById(userId, handId);
 
         return res.json({ hand });
     }

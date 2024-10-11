@@ -41,10 +41,9 @@ app.put("/users/:id", asyncWrapper((req: Request, res: Response) => userControll
 app.delete("/users/:id", asyncWrapper((req: Request, res: Response) => userController.deleteUser(req, res)));
 
 
-// Define the file upload route
 app.post("/hands/upload/:userId", upload.single('file'), asyncWrapper((req: Request, res: Response) => handController.uploadHandFile(req, res)));
 app.get("/hands/:userId", asyncWrapper((req: Request, res: Response) => handController.getHands(req, res)));
-app.get("/hands/:userId/:handId", asyncWrapper((req: Request, res: Response) => handController.getHandById(req, res)));
+app.get("/hands/:userId/:handId", asyncWrapper((req: Request, res: Response) => handController.getUserHandById(req, res)));
 app.delete("/hands/:handId", asyncWrapper((req: Request, res: Response) => handController.deleteHand(req, res)));
 
   
