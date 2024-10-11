@@ -42,7 +42,7 @@ model Hand {
   buttonSeat    Int
   players       Player[]      @relation("PlayerHands") // Players participating in the hand
   seatMapper    Json          // Maps player IDs to seat numbers and stacks
-  events        HandEvent[]
+  events        HandEvent[] @relation("HandEvents")
   ownerId       String        // Owner of the hand
   owner         User          @relation("UserHands", fields: [ownerId], references: [id])
 }
@@ -50,7 +50,7 @@ model Hand {
 model HandEvent {
   id          String      @id @default(uuid())
   handId      String
-  hand        Hand        @relation(fields: [handId], references: [id])
+  hand        Hand        @relation("HandEvents", fields: [handId], references: [id], onDelete: Cascade)
   eventType   String
   eventData   Json        // Store event-specific data here as JSON (player actions, board changes, etc.)
 }
