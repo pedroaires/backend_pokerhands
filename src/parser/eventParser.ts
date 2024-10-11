@@ -41,7 +41,11 @@ export interface EventParser {
 
 export class DefaultEventParser implements EventParser {
     parse(action: string): HandEvent {
-        return { label: 'UNKNOWN', text: action };
+        return { 
+            label: 'UNKNOWN', 
+            text: action,
+            getDataJson: () => ({})
+        };
     }
 }
 
@@ -52,6 +56,9 @@ export class PlayerActionParser implements EventParser {
         
         const playerId = self.extractPlayerId(action);
         const actionType = self.extractActionType(action);
+        if (actionType === 'folds' || actionType === 'checks') {
+            return new PlayerActionEvent(playerId, actionType, 0, false);
+        }
         const amount = self.extractAmount(action);
         const isAllIn = self.extractIsAllIn(action);
         return new PlayerActionEvent(playerId, actionType, amount, isAllIn);
@@ -75,7 +82,7 @@ export class PlayerActionParser implements EventParser {
     extractAmount(action: string): number {
         const amountMatch = action.match(/¥([\d.]+)/);
         if (!amountMatch) {
-            throw new Error('Amount not found in action string');
+            throw new Error('Amount not found in action string: ' + action);
         }
         return parseFloat(amountMatch[1]);
     }

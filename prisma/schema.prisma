@@ -26,7 +26,7 @@ model Team {
 model Player {
   id        Int      @id @default(autoincrement())
   username  String
-  club_id   Int
+  clubId   Int
   hands     Hand[]   @relation("PlayerHands")
 }
 
@@ -41,62 +41,16 @@ model Hand {
   maxSeats      Int
   buttonSeat    Int
   players       Player[]      @relation("PlayerHands") // Players participating in the hand
-  events        HandEvent[]   @relation("HandEvents")  // List of events related to this hand
+  seatMapper    Json          // Maps player IDs to seat numbers and stacks
+  events        HandEvent[]
   ownerId       String        // Owner of the hand
   owner         User          @relation("UserHands", fields: [ownerId], references: [id])
 }
 
 model HandEvent {
-  id        String       @id @default(uuid())
-  handId    String
-  hand      Hand         @relation("HandEvents", fields: [handId], references: [id])
-  eventType String      
-  eventData Json         // Will store event-specific data, like player actions, dealt cards, etc.
-  playerActionEvent PlayerActionEvent?
-  boardChangeEvent  BoardChangeEvent?
-  uncalledBetEvent  UncalledBetEvent?
-  dealtCardsEvent   DealtCardsEvent?
-  showCardsEvent    ShowCardsEvent? 
-}
-
-model PlayerActionEvent {
-  id           String  @id @default(uuid())
-  playerId     Int
-  actionType   String
-  amount       Float
-  isAllIn      Boolean
-  eventId      String @unique
-  handEvent    HandEvent @relation(fields: [eventId], references: [id])
-}
-
-model BoardChangeEvent {
-  id           String  @id @default(uuid())
-  changeType   String
-  newBoard     String[]
-  eventId      String @unique
-  handEvent    HandEvent @relation(fields: [eventId], references: [id])
-}
-
-model UncalledBetEvent {
-  id        String  @id @default(uuid())
-  playerId  Int
-  amount    Float
-  eventId   String @unique
-  handEvent HandEvent @relation(fields: [eventId], references: [id])
-}
-
-model DealtCardsEvent {
-  id        String  @id @default(uuid())
-  playerId  Int
-  cards     String[]
-  eventId   String @unique
-  handEvent HandEvent @relation(fields: [eventId], references: [id])
-}
-
-model ShowCardsEvent {
-  id        String  @id @default(uuid())
-  playerId  Int
-  cards     String[]
-  eventId   String @unique
-  handEvent HandEvent @relation(fields: [eventId], references: [id])
+  id          String      @id @default(uuid())
+  handId      String
+  hand        Hand        @relation(fields: [handId], references: [id])
+  eventType   String
+  eventData   Json        // Store event-specific data here as JSON (player actions, board changes, etc.)
 }

@@ -1,4 +1,4 @@
-interface HandMetadata {
+export interface HandMetadata {
     handId: string;
     gameType: string;
     blinds: { smallBlind: string, bigBlind: string, ante: string | undefined };
