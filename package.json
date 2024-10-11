@@ -6,6 +6,7 @@
   "scripts": {
     "test": "jest",
     "build": "tsc",
+    "postbuild": "cp -R src/uploads dist/uploads",
     "start": "node dist/server.js",
     "dev": "ts-node src/server.ts"
   },
