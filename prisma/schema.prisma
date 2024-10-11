@@ -18,6 +18,7 @@ model User {
 
 model Team {
   id        String  @id @default(uuid())
+  name      String  @unique
   users     User[]  @relation("UserTeams")
   ownerId   String
   owner     User    @relation("TeamOwner", fields: [ownerId], references: [id])

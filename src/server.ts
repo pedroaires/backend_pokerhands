@@ -1,11 +1,16 @@
 import express, { Request, Response } from 'express';
 import multer from 'multer';
 import path from 'path';
+import { asyncWrapper } from './utils/asyncWrapper';
+
 import { UserController } from './controllers/userController';
 import { UserService } from './services/userService';
+
 import { HandController } from './controllers/handController';
 import { HandService } from './services/handService';
-import { asyncWrapper } from './utils/asyncWrapper';
+
+import { TeamController } from './controllers/teamController';
+import { TeamService } from './services/teamService';
 
 const app = express();
 const port = 3000;
@@ -27,7 +32,7 @@ const upload = multer({ storage });
 
 const userController = new UserController(new UserService());
 const handController = new HandController(new HandService());
-
+const teamController = new TeamController(new TeamService());
 
 app.post("/users", asyncWrapper((req: Request, res: Response) => userController.registerUser(req, res)));
 
@@ -48,8 +53,12 @@ app.get("/hands/:userId/:handId", asyncWrapper((req: Request, res: Response) => 
 
 app.delete("/hands/:userId/:handId", asyncWrapper((req: Request, res: Response) => handController.deleteUserHand(req, res)));
 
-  
 
+app.post("/teams/:userId", asyncWrapper((req: Request, res: Response) => teamController.createTeam(req, res)));
+app.get("/teams/:userId", asyncWrapper((req: Request, res: Response) => teamController.getTeamsByUser(req, res)));
+app.get("/teams/:teamName/:userId", asyncWrapper((req: Request, res: Response) => teamController.getTeamHands(req, res)));
+app.delete("/teams/:teamName/:userId", asyncWrapper((req: Request, res: Response) => teamController.deleteTeam(req, res)));
+app.put("/teams/:teamName/:userId", asyncWrapper((req: Request, res: Response) => teamController.updateTeam(req, res)));
 app.listen(port, () => {
     console.log(`Servidor rodando em http://localhost:${port}`);
 });
