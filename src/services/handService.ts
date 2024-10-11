@@ -28,12 +28,10 @@ export class HandService {
                 const events = this.parseHandEvents(fileContent);
                 const handMetadata = this.parseHandMetadata(fileContent);
                 const { hand, handEvents } = await this.createHand(events, handMetadata, userId);
-                console.log(hand);
                 return hand;
                 
             }
             catch (error) {
-                console.log(error);
                 throw new HandParseError();
             }
         } catch (error) {
