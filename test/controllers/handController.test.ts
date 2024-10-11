@@ -47,15 +47,27 @@ describe("HandController", () => {
                 path: "/uploads/test.txt",
                 filename: "test.txt"
             } as Express.Multer.File;
-
-            handServiceMock.processHandFile.mockResolvedValue("File processed successfully");
+            const mockHand = {
+                id: "hand123",
+                startDateTime: new Date(),
+                endDateTime: new Date(),
+                gameType: "5 Card Omaha",
+                blinds: { smallBlind: "0.50", bigBlind: "1.00", ante: null },
+                tableId: "table1",
+                clubId: 1,
+                maxSeats: 6,
+                buttonSeat: 1,
+                ownerId: "1",
+                seatMapper: []
+            };
+            handServiceMock.processHandFile.mockResolvedValue(mockHand);
 
             await handController.uploadHandFile(req as Request, res as Response);
 
             expect(handServiceMock.processHandFile).toHaveBeenCalledWith(req.file, "1");
             expect(res.json).toHaveBeenCalledWith({
                 message: 'File uploaded and processed successfully',
-                result: "File processed successfully"
+                result: mockHand // Expect the mockHand object to be returned in the response
             });
         });
     });
@@ -80,7 +92,8 @@ describe("HandController", () => {
                         { id: 1, username: "Player1", club_id: 14625 },
                         { id: 2, username: "Player2", club_id: 14625 }
                     ],
-                    ownerId: "1"
+                    ownerId: "1",
+                    seatMapper: []
                 },
                 {
                     id: "2",
@@ -96,7 +109,8 @@ describe("HandController", () => {
                         { id: 3, username: "Player3", club_id: 14625 },
                         { id: 4, username: "Player4", club_id: 14625 }
                     ],
-                    ownerId: "1"
+                    ownerId: "1",
+                    seatMapper: []
                 }
             ];
             handServiceMock.getHandsByUser.mockResolvedValue(mockHands);
