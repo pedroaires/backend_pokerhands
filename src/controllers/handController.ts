@@ -44,9 +44,9 @@ export class HandController {
     }
 
 
-    async deleteHand(req: Request, res: Response): Promise<Response> {
-        const { handId } = req.params;
-        const deleted = await this.handService.deleteHand(handId);
+    async deleteUserHand(req: Request, res: Response): Promise<Response> {
+        const { userId, handId } = req.params;
+        const deleted = await this.handService.deleteUserHand(userId, handId);
 
         if (!deleted) {
             return res.status(404).json({ error: 'Hand not found' });

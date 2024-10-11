@@ -5,7 +5,6 @@ import { UserController } from './controllers/userController';
 import { UserService } from './services/userService';
 import { HandController } from './controllers/handController';
 import { HandService } from './services/handService';
-import { errorHandler } from './errors/errorHandler';
 import { asyncWrapper } from './utils/asyncWrapper';
 
 const app = express();
@@ -42,9 +41,12 @@ app.delete("/users/:id", asyncWrapper((req: Request, res: Response) => userContr
 
 
 app.post("/hands/upload/:userId", upload.single('file'), asyncWrapper((req: Request, res: Response) => handController.uploadHandFile(req, res)));
+
 app.get("/hands/:userId", asyncWrapper((req: Request, res: Response) => handController.getHands(req, res)));
+
 app.get("/hands/:userId/:handId", asyncWrapper((req: Request, res: Response) => handController.getUserHandById(req, res)));
-app.delete("/hands/:handId", asyncWrapper((req: Request, res: Response) => handController.deleteHand(req, res)));
+
+app.delete("/hands/:userId/:handId", asyncWrapper((req: Request, res: Response) => handController.deleteUserHand(req, res)));
 
   
 

@@ -141,7 +141,8 @@ export class HandService {
         
         const hand = this.prisma.hand.findUnique({
             where: {
-                id: handId
+                id: handId,
+                ownerId: userId
             }
         });
         if (!hand) {
@@ -150,9 +151,32 @@ export class HandService {
         return hand;
     }
 
-    async deleteHand(handId: string): Promise<Hand | undefined> {
-        // TODO: Implement logic to delete hand
-        return undefined;
+    async deleteUserHand(userId: string, handId: string): Promise<Hand | undefined> {
+        const userExists = await this.prisma.user.findUnique({
+            where: { id: userId }
+        });
+
+        if (!userExists) {
+            throw new UserNotFoundError(userId);
+        }
+
+        const hand = await this.prisma.hand.findUnique({
+            where: {
+                id: handId,
+                ownerId: userId
+            }
+        });
+
+        if (!hand) {
+            throw new HandNotFoundError(handId);
+        }
+
+        const deleted = await this.prisma.hand.delete({
+            where: {
+                id: handId
+            }
+        });
+        return deleted
     }
 
 }
