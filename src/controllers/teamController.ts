@@ -78,4 +78,17 @@ export class TeamController {
 
         res.status(200).send({ message: 'Team updated', updatedTeam });
     }
+
+    async listTeamUsers(req: Request, res: Response) {
+        const { teamName, userId } = req.params;
+        if (!teamName) {
+            return res.status(400).send({ message: 'Missing team Name' });
+        }
+        if (!userId) {
+            return res.status(400).send({ message: 'Missing user ID' });
+        }
+
+        const users = await this.teamService.listTeamUsers(teamName, userId);
+        res.status(200).send({ users });
+    }
 }

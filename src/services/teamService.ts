@@ -111,4 +111,20 @@ export class TeamService {
             data: { name: data.newName },
         });
     }
+
+    async listTeamUsers(teamName: string, userId: string): Promise<{ id: string; username: string }[]> {
+        const team = await this.prisma.team.findFirst({
+            where: { name: teamName },
+            include: { users: true },
+        });
+        if (!team) {
+            throw new TeamWithNameNotFoundError(teamName);
+        }
+        const isAuthorized = team.users.some((user) => user.id === userId);
+        if (!isAuthorized) {
+            throw new TeamUnauthorizedError(userId, teamName);
+        }
+
+        return team.users.map((user) => ({ id: user.id, username: user.username }));
+    }
 }

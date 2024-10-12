@@ -209,4 +209,40 @@ describe("TeamController", () => {
             expect(res.send).toHaveBeenCalledWith({ message: 'Team updated', updatedTeam: mockUpdatedTeam });
         });
     });
+
+    describe("listTeamUsers", () => {
+        it("should return 400 if team name is missing", async () => {
+            req.params = { userId: "1" };  // No teamName provided
+    
+            await teamController.listTeamUsers(req, res);
+    
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.send).toHaveBeenCalledWith({ message: 'Missing team Name' });
+        });
+    
+        it("should return 400 if user ID is missing", async () => {
+            req.params = { teamName: "testTeam" };  // No userId provided
+    
+            await teamController.listTeamUsers(req, res);
+    
+            expect(res.status).toHaveBeenCalledWith(400);
+            expect(res.send).toHaveBeenCalledWith({ message: 'Missing user ID' });
+        });
+    
+        it("should return the list of users for a specific team", async () => {
+            req.params = { teamName: "testTeam", userId: "1" };
+            const mockUsers = [
+                { id: "user1", username: "User One" },
+                { id: "user2", username: "User Two" }
+            ];
+    
+            teamServiceMock.listTeamUsers.mockResolvedValue(mockUsers);
+    
+            await teamController.listTeamUsers(req, res);
+    
+            expect(teamServiceMock.listTeamUsers).toHaveBeenCalledWith("testTeam", "1");
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.send).toHaveBeenCalledWith({ users: mockUsers });
+        });
+    });
 });

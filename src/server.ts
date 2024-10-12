@@ -61,9 +61,10 @@ app.delete("/hands/:userId/:handId", asyncWrapper((req: Request, res: Response) 
 
 app.post("/teams/:userId", asyncWrapper((req: Request, res: Response) => teamController.createTeam(req, res)));
 app.get("/teams/:userId", asyncWrapper((req: Request, res: Response) => teamController.getTeamsByUser(req, res)));
-app.get("/teams/:teamName/:userId", asyncWrapper((req: Request, res: Response) => teamController.getTeamHands(req, res)));
+app.get("/teams/:teamName/hands/:userId", asyncWrapper((req: Request, res: Response) => teamController.getTeamHands(req, res)));
 app.delete("/teams/:teamName/:userId", asyncWrapper((req: Request, res: Response) => teamController.deleteTeam(req, res)));
 app.put("/teams/:teamName/:userId", asyncWrapper((req: Request, res: Response) => teamController.updateTeam(req, res)));
+app.get("/teams/:teamName/users/:userId", asyncWrapper((req: Request, res: Response) => teamController.listTeamUsers(req, res)));
 
 
 app.post("/invitations/:userId/:teamName", asyncWrapper((req: Request, res: Response) => invitationController.sendInvitation(req, res)));
