@@ -14,6 +14,12 @@ export class UserNotFoundError extends UserError {
     }
 }
 
+export class UserWithUsernameNotFoundError extends UserError {
+    constructor(username: string) {
+        super(`User with username: ${username} does not exist`, 404);
+    }
+}
+
 export class UserAlreadyExistsError extends UserError{
 
     constructor(username: string) {

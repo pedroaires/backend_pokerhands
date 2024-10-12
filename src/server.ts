@@ -12,6 +12,9 @@ import { HandService } from './services/handService';
 import { TeamController } from './controllers/teamController';
 import { TeamService } from './services/teamService';
 
+import { InvitationController } from './controllers/invitationController';
+import { InvitationService } from './services/invitationService';
+
 const app = express();
 const port = 3000;
 
@@ -33,6 +36,8 @@ const upload = multer({ storage });
 const userController = new UserController(new UserService());
 const handController = new HandController(new HandService());
 const teamController = new TeamController(new TeamService());
+const invitationController = new InvitationController(new InvitationService());
+
 
 app.post("/users", asyncWrapper((req: Request, res: Response) => userController.registerUser(req, res)));
 
@@ -59,6 +64,20 @@ app.get("/teams/:userId", asyncWrapper((req: Request, res: Response) => teamCont
 app.get("/teams/:teamName/:userId", asyncWrapper((req: Request, res: Response) => teamController.getTeamHands(req, res)));
 app.delete("/teams/:teamName/:userId", asyncWrapper((req: Request, res: Response) => teamController.deleteTeam(req, res)));
 app.put("/teams/:teamName/:userId", asyncWrapper((req: Request, res: Response) => teamController.updateTeam(req, res)));
+
+
+app.post("/invitations/:userId/:teamName", asyncWrapper((req: Request, res: Response) => invitationController.sendInvitation(req, res)));
+
+app.get("/invitations/:userId", asyncWrapper((req: Request, res: Response) => invitationController.getPendingInvitations(req, res)));
+
+app.put("/invitations/:userId/:invitationId", asyncWrapper((req: Request, res: Response) => invitationController.respondToInvitation(req, res)));
+
+
+
+
+
+
+
 app.listen(port, () => {
     console.log(`Servidor rodando em http://localhost:${port}`);
 });
