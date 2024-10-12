@@ -14,6 +14,7 @@ model User {
   teams      Team[]  @relation("UserTeams")
   ownedTeams Team[]  @relation("TeamOwner")
   hands      Hand[]  @relation("UserHands")  // The user owns these hands
+  invitations Invitation[] @relation("InviteeInvitations")
 }
 
 model Team {
@@ -22,7 +23,25 @@ model Team {
   users     User[]  @relation("UserTeams")
   ownerId   String
   owner     User    @relation("TeamOwner", fields: [ownerId], references: [id])
+  invitations Invitation[] @relation("TeamInvitations")
 }
+
+model Invitation {
+  id        String        @id @default(uuid())
+  team      Team          @relation("TeamInvitations", fields: [teamId], references: [id]) 
+  teamId    String
+  invitee   User          @relation("InviteeInvitations", fields: [inviteeId], references: [id])
+  inviteeId String
+  status    InvitationStatus @default(PENDING)
+  createdAt DateTime       @default(now())
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
 
 model Player {
   id        Int      @id @default(autoincrement())
