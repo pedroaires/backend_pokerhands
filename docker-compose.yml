@@ -1,15 +1,13 @@
-version: '3'
-
-
 services:
  db:
    image: postgres
-   container_name: postgres
+   container_name: pokerhands_db
    restart: always
    volumes:
     - pgdata:/var/lib/postgresql/data
    environment:
-     POSTGRES_PASSWORD: pedro_teste
+     POSTGRES_PASSWORD: pokerhands_password
+     POSTGRES_DB: pokerhands_db
    ports:
      - 5432:5432
    logging:

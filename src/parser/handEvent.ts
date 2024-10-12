@@ -1,13 +1,7 @@
 export interface HandEvent {
     label: string;
     text?: string;
-}
-
-export interface PlayerActionData {
-    playerId: number;
-    actionType: string;
-    amount: number;
-    isAllIn: boolean;
+    getDataJson(): any;
 }
 
 export class PlayerActionEvent implements HandEvent {
@@ -26,12 +20,17 @@ export class PlayerActionEvent implements HandEvent {
         this.isAllIn = isAllIn;
     }
 
+    getDataJson() {
+        return {
+            playerId: this.playerId,
+            actionType: this.actionType,
+            amount: this.amount,
+            isAllIn: this.isAllIn
+        };
+    }
+
 }
 
-export interface BoardChangeData {
-    label: string;
-    new_board: string[];
-}
 export class BoardChangeEvent implements HandEvent {
     // when there is a change in the board, like flop, turn, river
     // first flop, second flop ...
@@ -46,6 +45,13 @@ export class BoardChangeEvent implements HandEvent {
         this.changeType = changeType;
         this.newBoard = newBoard;
     } 
+
+    getDataJson() {
+        return {
+            changeType: this.changeType,
+            newBoard: this.newBoard
+        };
+    }
 }
 export class UncalledBetEvent implements HandEvent {
     // when a player has an uncalled bet and the bet returns to him
@@ -58,6 +64,13 @@ export class UncalledBetEvent implements HandEvent {
     ) {
         this.playerId = playerId;
         this.amount = amount;
+    }
+
+    getDataJson() {
+        return {
+            playerId: this.playerId,
+            amount: this.amount
+        };
     }
 }
 
@@ -73,6 +86,13 @@ export class DealtCardsEvent implements HandEvent {
         this.playerId = playerId;
         this.cards = cards;
     }
+
+    getDataJson() {
+        return {
+            playerId: this.playerId,
+            cards: this.cards
+        };
+    }
 }
 
 export class ShowCardsEvent implements HandEvent {
@@ -87,26 +107,11 @@ export class ShowCardsEvent implements HandEvent {
         this.playerId = playerId;
         this.cards = cards;
     }
-}
 
-export interface SeatSummary {
-    seatNumber: number; // Seat number (1-6 in this case)
-    playerId: number; // Unique player identifier
-    result: string; // "folded", "collected", "shoed"
-    resultStage: string; // "flop", "turn", "river", etc.
-    role: string; // "small blind", "big blind", "button", etc.
-    collectedAmount: number; // Amount collected by the player if they won
-    cards: string[]; // Cards held by the player
-}
-export interface Board{
-    cards: string[];
-}
-export interface SummaryData {
-    totalPot: number,
-    rake: number,
-    boards: Board[],
-    seatsResults: SeatSummary[]
-    startDate: string,
-    endDate: string,
-    
+    getDataJson() {
+        return {
+            playerId: this.playerId,
+            cards: this.cards
+        };
+    }
 }

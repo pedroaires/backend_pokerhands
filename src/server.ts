@@ -1,5 +1,19 @@
 import express, { Request, Response } from 'express';
-import { RegisterUserController } from './controllers/registerUserController';
+import multer from 'multer';
+import path from 'path';
+import { asyncWrapper } from './utils/asyncWrapper';
+
+import { UserController } from './controllers/userController';
+import { UserService } from './services/userService';
+
+import { HandController } from './controllers/handController';
+import { HandService } from './services/handService';
+
+import { TeamController } from './controllers/teamController';
+import { TeamService } from './services/teamService';
+
+import { InvitationController } from './controllers/invitationController';
+import { InvitationService } from './services/invitationService';
 
 const app = express();
 const port = 3000;
@@ -7,58 +21,62 @@ const port = 3000;
 
 app.use(express.json());
 
-const registerUserController = new RegisterUserController();
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        // Use an absolute path for the uploads directory
+        cb(null, path.join(__dirname, 'uploads'));  // Resolve absolute path using __dirname
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);  // Unique filename
+    }
+});
 
-app.post('/register', registerUserController.handle);
+const upload = multer({ storage });
+
+const userController = new UserController(new UserService());
+const handController = new HandController(new HandService());
+const teamController = new TeamController(new TeamService());
+const invitationController = new InvitationController(new InvitationService());
 
 
-// app.get('/', (req: Request, res: Response) => {
-//     res.send('Hello, world!');
-// });
+app.post("/users", asyncWrapper((req: Request, res: Response) => userController.registerUser(req, res)));
 
-// interface Hand {
-//     id: number;
-//     [key: string]: any;
-// }
-// let hands: Hand[] = [];
+app.get("/users", asyncWrapper((req: Request, res: Response) => userController.getAllUsers(req, res)));
 
-// app.get('/hands', (req: Request, res: Response) => {
-//     res.send({"hands": hands});
-// });
+app.get("/users/:id", asyncWrapper((req: Request, res: Response) => userController.getUserById(req, res)));
 
-// app.post('/hands', (req: Request, res: Response) => {
-//     req.body.id = hands.length + 1;
-//     hands.push(req.body);
-//     res.send({"hands": hands});
-// });
+app.put("/users/:id", asyncWrapper((req: Request, res: Response) => userController.updateUser(req, res)));
 
-// app.put('/hands/:id', (req: Request, res: Response) => {
-//     let id = Number(req.params.id);
-//     let handIndex = hands.findIndex(hand => hand.id === id);
-//     if (handIndex === -1) {
-//         res.status(404).send({ message: 'Hand not found' });
-//         return;
-//     }
+app.delete("/users/:id", asyncWrapper((req: Request, res: Response) => userController.deleteUser(req, res)));
 
-//     hands[handIndex] = {
-//         id: hands[handIndex].id,
-//         ...req.body
-//     };
 
-//     res.send({ "hands": hands });
-// });
+app.post("/hands/upload/:userId", upload.single('file'), asyncWrapper((req: Request, res: Response) => handController.uploadHandFile(req, res)));
 
-// app.delete('/hands/:id', (req: Request, res: Response) => {
-//     let id = Number(req.params.id);
-//     let hand = hands.find(hand => hand.id === id);
-//     if (hand) {
-//         hands.splice(hands.indexOf(hand), 1);
-//         res.send({"hands": hands});
-//     }
-//     else {
-//         res.status(404).send({ message: 'Hand not found' });
-//     }
-// });
+app.get("/hands/:userId", asyncWrapper((req: Request, res: Response) => handController.getHands(req, res)));
+
+app.get("/hands/:userId/:handId", asyncWrapper((req: Request, res: Response) => handController.getUserHandById(req, res)));
+
+app.delete("/hands/:userId/:handId", asyncWrapper((req: Request, res: Response) => handController.deleteUserHand(req, res)));
+
+
+app.post("/teams/:userId", asyncWrapper((req: Request, res: Response) => teamController.createTeam(req, res)));
+app.get("/teams/:userId", asyncWrapper((req: Request, res: Response) => teamController.getTeamsByUser(req, res)));
+app.get("/teams/:teamName/:userId", asyncWrapper((req: Request, res: Response) => teamController.getTeamHands(req, res)));
+app.delete("/teams/:teamName/:userId", asyncWrapper((req: Request, res: Response) => teamController.deleteTeam(req, res)));
+app.put("/teams/:teamName/:userId", asyncWrapper((req: Request, res: Response) => teamController.updateTeam(req, res)));
+
+
+app.post("/invitations/:userId/:teamName", asyncWrapper((req: Request, res: Response) => invitationController.sendInvitation(req, res)));
+
+app.get("/invitations/:userId", asyncWrapper((req: Request, res: Response) => invitationController.getPendingInvitations(req, res)));
+
+app.put("/invitations/:userId/:invitationId", asyncWrapper((req: Request, res: Response) => invitationController.respondToInvitation(req, res)));
+
+
+
+
+
+
 
 app.listen(port, () => {
     console.log(`Servidor rodando em http://localhost:${port}`);
