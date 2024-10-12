@@ -36,6 +36,7 @@ describe('InvitationService', () => {
                 id: '1',
                 name: 'testTeam',
                 ownerId: '2',
+                owner: { id: '2', username: 'ownerUsername', password: 'ownerPassword' },
                 users: []
             };
         
@@ -52,7 +53,7 @@ describe('InvitationService', () => {
         });
 
         it('should throw UserWithUsernameNotFoundError if invitee does not exist', async () => {
-            const mockTeam = { id: '1', name: 'testTeam', ownerId: '1', users: [] };
+            const mockTeam = { id: '1', name: 'testTeam', ownerId: '1', owner:{id: '1'}, users: [] };
 
             prismaMock.team.findUnique.mockResolvedValue(mockTeam);
             prismaMock.user.findUnique.mockResolvedValue(null);
@@ -69,6 +70,7 @@ describe('InvitationService', () => {
                 id: '1',
                 name: 'testTeam',
                 ownerId: '1',
+                owner: { id: '1', username: 'ownerUsername', password: 'ownerPassword' },
                 users: [{ id: '2', username: 'inviteeUsername' }]
             };
 
@@ -86,7 +88,7 @@ describe('InvitationService', () => {
         });
 
         it('should send an invitation successfully', async () => {
-            const mockTeam = { id: '1', name: 'testTeam', ownerId: '1' , users: [] };
+            const mockTeam = { id: '1', name: 'testTeam', ownerId: '1' , users: [], owner: { id: '1' } };
             const mockInvitee = { id: '2', username: 'inviteeUsername', password: 'inviteePassword' };
             const mockInvitation = {
                 id: 'invitation1',
