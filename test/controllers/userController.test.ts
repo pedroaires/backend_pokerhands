@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import { UserController } from "../../src/controllers/userController";
 import { UserService } from "../../src/services/userService";
-import { UserNotFoundError } from "../../src/errors/userError";
 
-jest.mock("../../src/services/userService");  // Mock the UserService
+
+jest.mock("../../src/services/userService");  
 
 describe("UserController", () => {
     let req: Partial<Request>;
@@ -22,14 +22,14 @@ describe("UserController", () => {
         };
 
         userServiceMock = new UserService() as jest.Mocked<UserService>;
-        userController = new UserController(userServiceMock);  // Inject mock UserService into the controller
+        userController = new UserController(userServiceMock);
     });
 
     afterEach(() => {
         jest.clearAllMocks();
     });
 
-    // Create User Tests
+
     describe("Create User", () => {
         it("should return 400 if username is missing", async () => {
             req.body = { password: "testPassword" };
@@ -53,7 +53,7 @@ describe("UserController", () => {
             req.body = { username: "testUser", password: "testPassword" };
             const mockUser = { id: "1", username: "testUser", password: "testPassword" };
 
-            userServiceMock.createUser.mockResolvedValue(mockUser);  // Mock the return of createUser
+            userServiceMock.createUser.mockResolvedValue(mockUser);
 
             await userController.registerUser(req as Request, res as Response);
 
@@ -62,7 +62,6 @@ describe("UserController", () => {
         });
     });
 
-    // Get All Users Tests
     describe("Get All Users", () => {
         it("should return all users", async () => {
             const mockUsers = [
@@ -79,7 +78,6 @@ describe("UserController", () => {
         });
     });
 
-    // Get User by ID Tests
     describe("Get User by ID", () => {
         it("should return the user if found", async () => {
             const mockUser = { id: "1", username: "testUser", password: "testPassword" };
@@ -94,7 +92,6 @@ describe("UserController", () => {
         });
     });
 
-    // Update User Tests
     describe("Update User", () => {
         it("should return 400 if username or password is missing", async () => {
             req.body = { username: "testUser" }; // Password missing
@@ -123,7 +120,6 @@ describe("UserController", () => {
         });
     });
 
-    // Delete User Tests
     describe("Delete User", () => {
         it("should delete a user and return success message", async () => {
             req.params = { id: "1" };

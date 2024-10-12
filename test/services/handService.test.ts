@@ -9,7 +9,7 @@ jest.mock('fs', () => ({
     promises: {
       readFile: jest.fn(),
     },
-    existsSync: jest.fn(), // Add this to mock fs.existsSync
+    existsSync: jest.fn(),
   }));
   
 
@@ -18,7 +18,7 @@ describe('HandService', () => {
 
   beforeEach(() => {
     handService = new HandService();
-    (handService as any).prisma = prismaMock; // Inject the mocked Prisma client
+    (handService as any).prisma = prismaMock;
   });
 
   afterEach(() => {
@@ -60,7 +60,7 @@ describe('HandService', () => {
         startDateTime: new Date(),
         endDateTime: new Date(),
         gameType: "5 Card Omaha",
-        blinds: { smallBlind: "0.50", bigBlind: "1.00", ante: null }, // Adding missing blinds
+        blinds: { smallBlind: "0.50", bigBlind: "1.00", ante: null },
         tableId: "table1",
         clubId: 1, 
         maxSeats: 6, 

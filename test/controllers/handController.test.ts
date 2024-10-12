@@ -67,12 +67,12 @@ describe("HandController", () => {
             expect(handServiceMock.processHandFile).toHaveBeenCalledWith(req.file, "1");
             expect(res.json).toHaveBeenCalledWith({
                 message: 'File uploaded and processed successfully',
-                result: mockHand // Expect the mockHand object to be returned in the response
+                result: mockHand 
             });
         });
     });
 
-    // Tests for getHands
+
     describe("getHands", () => {
 
         it("should return all hands for a specific user", async () => {

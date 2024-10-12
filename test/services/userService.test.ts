@@ -1,20 +1,19 @@
 import { UserService } from '../../src/services/userService';
 import { UserAlreadyExistsError, UserNotFoundError } from '../../src/errors/userError';
-import prismaMock from '../singleton';  // The mocked Prisma client
+import prismaMock from '../singleton';  
 
 describe('UserService', () => {
     let userService: UserService;
 
     beforeEach(() => {
         userService = new UserService();
-        (userService as any).prisma = prismaMock;  // Replace the actual Prisma client with the mock
+        (userService as any).prisma = prismaMock; 
     });
 
     afterEach(() => {
-        jest.clearAllMocks();  // Clear mocks after each test to avoid state leakage
+        jest.clearAllMocks();  
     });
 
-    // Test for createUser
     describe('createUser', () => {
         it('should throw UserAlreadyExistsError if user already exists', async () => {
             const mockUserData = { username: 'testUser', password: 'testPassword' };
@@ -46,7 +45,6 @@ describe('UserService', () => {
         });
     });
 
-    // Test for getAllUsers
     describe('getAllUsers', () => {
         it('should return all users', async () => {
             const mockUsers = [
@@ -63,7 +61,6 @@ describe('UserService', () => {
         });
     });
 
-    // Test for getUserById
     describe('getUserById', () => {
         it('should return the user if found', async () => {
             const mockUser = { id: '1', username: 'testUser', password: 'testPassword' };
@@ -90,7 +87,6 @@ describe('UserService', () => {
         });
     });
 
-    // Test for updateUser
     describe('updateUser', () => {
         it('should throw UserNotFoundError if user does not exist', async () => {
             const mockUserData = { username: 'updatedUser', password: 'updatedPassword' };
@@ -123,7 +119,6 @@ describe('UserService', () => {
         });
     });
 
-    // Test for deleteUser
     describe('deleteUser', () => {
         it('should throw UserNotFoundError if user does not exist', async () => {
             prismaMock.user.findUnique.mockResolvedValue(null);
