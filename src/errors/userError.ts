@@ -27,3 +27,9 @@ export class UserAlreadyExistsError extends UserError{
         this.statusCode = 409;
     }
 }
+
+export class InvalidCredentialsError extends UserError {
+    constructor() {
+        super('Invalid credentials', 401);
+    }
+}

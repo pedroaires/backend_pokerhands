@@ -1,5 +1,8 @@
+import bcrypt from 'bcryptjs';
+import { signAccessToken } from '../utils/jwt';
 import { PrismaClient, User  } from "@prisma/client";
-import { UserAlreadyExistsError, UserNotFoundError } from "../errors/userError";
+import { InvalidCredentialsError, UserAlreadyExistsError, UserNotFoundError, UserWithUsernameNotFoundError } from "../errors/userError";
+import { hash } from 'crypto';
 export class UserService {
     private prisma: PrismaClient;
     
@@ -14,14 +17,25 @@ export class UserService {
         if (existingUser) {
             throw new UserAlreadyExistsError(userData.username);
         }
-
+        const hashedPassword = await bcrypt.hash(userData.password, 8);
         const user = this.prisma.user.create({
             data: {
                 username: userData.username,
-                password: userData.password
+                password: hashedPassword
             }
         });
         return user;
+    }
+
+    async loginUser(username: string, password: string) {
+        const user = await this.prisma.user.findUnique({ where: { username } });
+        if (!user) throw new UserWithUsernameNotFoundError(username);
+        
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) throw new InvalidCredentialsError();
+
+        const token = signAccessToken(user);
+        return { user, token };
     }
 
     //Only usefull for tests

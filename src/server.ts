@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import multer from 'multer';
 import path from 'path';
 import { asyncWrapper } from './utils/asyncWrapper';
+import { verifyAccessToken } from './utils/jwt';
 
 import { UserController } from './controllers/userController';
 import { UserService } from './services/userService';
@@ -39,6 +40,9 @@ const teamController = new TeamController(new TeamService());
 const invitationController = new InvitationController(new InvitationService());
 
 
+
+app.post("/auth/login", asyncWrapper((req: Request, res: Response) => userController.loginUser(req, res)));
+
 app.post("/users", asyncWrapper((req: Request, res: Response) => userController.registerUser(req, res)));
 
 app.get("/users", asyncWrapper((req: Request, res: Response) => userController.getAllUsers(req, res)));
@@ -52,7 +56,7 @@ app.delete("/users/:id", asyncWrapper((req: Request, res: Response) => userContr
 
 app.post("/hands/upload/:userId", upload.single('file'), asyncWrapper((req: Request, res: Response) => handController.uploadHandFile(req, res)));
 
-app.get("/hands/:userId", asyncWrapper((req: Request, res: Response) => handController.getHands(req, res)));
+app.get("/hands", verifyAccessToken, asyncWrapper((req: Request, res: Response) => handController.getHands(req, res)));
 
 app.get("/hands/:userId/:handId", asyncWrapper((req: Request, res: Response) => handController.getUserHandById(req, res)));
 
