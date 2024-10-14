@@ -4,8 +4,8 @@ import path from 'path';
 import { asyncWrapper } from './utils/asyncWrapper';
 import { verifyAccessToken } from './utils/jwt';
 
-import { UserController } from './controllers/userController';
-import { UserService } from './services/userService';
+import userRouter from './routes/userRoutes';
+import authRouter from './routes/authRoutes';
 
 import { HandController } from './controllers/handController';
 import { HandService } from './services/handService';
@@ -36,25 +36,14 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-const userController = new UserController(new UserService());
+
 const handController = new HandController(new HandService());
 const teamController = new TeamController(new TeamService());
 const invitationController = new InvitationController(new InvitationService());
 
 
-
-app.post("/auth/login", asyncWrapper((req: Request, res: Response) => userController.loginUser(req, res)));
-
-app.post("/users", asyncWrapper((req: Request, res: Response) => userController.registerUser(req, res)));
-
-app.get("/users/getUsers", asyncWrapper((req: Request, res: Response) => userController.getAllUsers(req, res)));
-
-app.get("/users/getUser", verifyAccessToken, asyncWrapper((req: Request, res: Response) => userController.getUserById(req, res)));
-
-app.put("/users", verifyAccessToken, asyncWrapper((req: Request, res: Response) => userController.updateUser(req, res)));
-
-app.delete("/users", verifyAccessToken, asyncWrapper((req: Request, res: Response) => userController.deleteUser(req, res)));
-
+app.use('/auth', authRouter);
+app.use('/users', userRouter);
 
 app.post("/hands/upload", verifyAccessToken, upload.single('file'), asyncWrapper((req: Request, res: Response) => handController.uploadHandFile(req, res)));
 

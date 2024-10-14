@@ -25,18 +25,6 @@ export class UserController {
     
     }
 
-    async loginUser(req: Request, res: Response) {
-        const { username, password } = req.body;
-        if (!username || !password) {
-            return res.status(400).send({ message: 'Missing credentials' });
-        }
-        
-        const { token } = await this.userService.loginUser(username, password);
-        
-        res.status(200).send({ message: 'Login successful', token });
-        
-    }
-
     async getAllUsers(req: Request, res: Response) {
         const users = await this.userService.getAllUsers();
         res.send(users);
