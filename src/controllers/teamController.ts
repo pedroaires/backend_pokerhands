@@ -9,8 +9,7 @@ export class TeamController {
     }
 
     async createTeam(req: Request, res: Response) {
-        const { userId } = req.params;
-        const { name } = req.body;
+        const { name, userId } = req.body;
 
         if (!name) {
             return res.status(400).send({ message: 'Missing team name' });
@@ -25,7 +24,7 @@ export class TeamController {
     }
 
     async getTeamsByUser(req: Request, res: Response) {
-        const { userId } = req.params;
+        const { userId } = req.body;
         if (!userId) {
             return res.status(400).send({ message: 'Missing user ID' });
         }
@@ -35,7 +34,8 @@ export class TeamController {
     }
 
     async getTeamHands(req: Request, res: Response) {
-        const { teamName, userId } = req.params;
+        const { teamName } = req.params;
+        const { userId } = req.body;
         if (!teamName) {
             return res.status(400).send({ message: 'Missing team Name' });
         }
@@ -48,7 +48,8 @@ export class TeamController {
     }
 
     async deleteTeam(req: Request, res: Response) {
-        const { teamName, userId } = req.params;
+        const { teamName } = req.params;
+        const { userId } = req.body;
         if (!teamName) {
             return res.status(400).send({ message: 'Missing team Name' });
         }
@@ -61,8 +62,8 @@ export class TeamController {
     }
 
     async updateTeam(req: Request, res: Response) {
-        const { teamName, userId } = req.params;
-        const { newName } = req.body;
+        const { teamName } = req.params;
+        const { newName, userId } = req.body;
         
         if (!userId) {
             return res.status(400).send({ message: 'Missing the userId' });
@@ -80,7 +81,8 @@ export class TeamController {
     }
 
     async listTeamUsers(req: Request, res: Response) {
-        const { teamName, userId } = req.params;
+        const { teamName } = req.params;
+        const { userId } = req.body;
         if (!teamName) {
             return res.status(400).send({ message: 'Missing team Name' });
         }

@@ -31,27 +31,29 @@ export class UserController {
             return res.status(400).send({ message: 'Missing credentials' });
         }
         
-        const { user, token } = await this.userService.loginUser(username, password);
+        const { token } = await this.userService.loginUser(username, password);
         
         res.status(200).send({ message: 'Login successful', token });
         
     }
 
     async getAllUsers(req: Request, res: Response) {
-
         const users = await this.userService.getAllUsers();
         res.send(users);
-  
     }
 
     async getUserById(req: Request, res: Response) {
-        const { id } = req.params;
-        const user = await this.userService.getUserById(id);
+        const { userId } = req.body;
+        if (!userId) {
+            res.status(400).send({ message: 'Missing user ID' });
+            return;
+        }
+        const user = await this.userService.getUserById(userId);
         res.send(user);
     }
 
     async updateUser(req: Request, res: Response) {
-        const { id } = req.params;
+        const { userId } = req.body;
         const { username, password } = req.body;
         if (!username) {
             res.status(400).send({ message: 'Missing username' });
@@ -62,21 +64,25 @@ export class UserController {
             res.status(400).send({ message: 'Missing password' });
             return;
         }
+        if (!userId) {
+            res.status(400).send({ message: 'Missing user ID' });
+            return;
+        }
 
-        const updatedUser = await this.userService.updateUser(id, { username, password });
+        const updatedUser = await this.userService.updateUser(userId, { username, password });
     
         return res.send({ message: 'User updated', user: updatedUser });
     }
 
 
     async deleteUser(req: Request, res: Response) {
-        const { id } = req.params;
-        const deletedUser = await this.userService.deleteUser(id);
-        if (!deletedUser) {
-            res.status(404).send({ message: 'User not found' });
+        const { userId } = req.body;
+        if (!userId) {
+            res.status(400).send({ message: 'Missing user ID' });
             return;
         }
-        res.send({ message: 'User deleted' });
+        const deletedUser = await this.userService.deleteUser(userId);
+        res.send({ message: 'User deleted', user: deletedUser });
     }
 
 

@@ -9,8 +9,8 @@ export class InvitationController {
     }
 
     async sendInvitation(req: Request, res: Response) {
-        const { userId, teamName } = req.params;
-        const { inviteeUsername } = req.body;
+        const { teamName } = req.params;
+        const { userId, inviteeUsername } = req.body;
 
         if (!userId) {
             return res.status(400).send({ message: 'Missing user ID' });
@@ -30,7 +30,7 @@ export class InvitationController {
     }
 
     async getPendingInvitations(req: Request, res: Response) {
-        const { userId } = req.params;
+        const { userId } = req.body;
         if (!userId) {
             return res.status(400).send({ message: 'Missing user ID' });
         }
@@ -40,8 +40,9 @@ export class InvitationController {
     }
 
     async respondToInvitation(req: Request, res: Response) {
-        const { invitationId, userId } = req.params;
-        const { response } = req.body;
+        const { invitationId } = req.params;
+
+        const { response, userId } = req.body;
 
         if (!invitationId) {
             return res.status(400).send({ message: 'Missing invitation ID' });

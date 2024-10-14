@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import { signAccessToken } from '../utils/jwt';
 import { PrismaClient, User  } from "@prisma/client";
 import { InvalidCredentialsError, UserAlreadyExistsError, UserNotFoundError, UserWithUsernameNotFoundError } from "../errors/userError";
-import { hash } from 'crypto';
+
 export class UserService {
     private prisma: PrismaClient;
     
@@ -64,13 +64,14 @@ export class UserService {
         if (!existingUser) {
             throw new UserNotFoundError(id);
         }
+        const hashedPassword = await bcrypt.hash(userData.password, 8);
         const user = this.prisma.user.update({
             where: {
                 id: id
             },
             data: {
                 username: userData.username,
-                password: userData.password
+                password: hashedPassword
             }
         });
         return user;

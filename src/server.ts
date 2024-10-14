@@ -16,12 +16,14 @@ import { TeamService } from './services/teamService';
 import { InvitationController } from './controllers/invitationController';
 import { InvitationService } from './services/invitationService';
 
+const cors = require('cors');
+
 const app = express();
 const port = 3000;
 
 
 app.use(express.json());
-
+app.use(cors());
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         // Use an absolute path for the uploads directory
@@ -45,37 +47,37 @@ app.post("/auth/login", asyncWrapper((req: Request, res: Response) => userContro
 
 app.post("/users", asyncWrapper((req: Request, res: Response) => userController.registerUser(req, res)));
 
-app.get("/users", asyncWrapper((req: Request, res: Response) => userController.getAllUsers(req, res)));
+app.get("/users/getUsers", asyncWrapper((req: Request, res: Response) => userController.getAllUsers(req, res)));
 
-app.get("/users/:id", asyncWrapper((req: Request, res: Response) => userController.getUserById(req, res)));
+app.get("/users/getUser", verifyAccessToken, asyncWrapper((req: Request, res: Response) => userController.getUserById(req, res)));
 
-app.put("/users/:id", asyncWrapper((req: Request, res: Response) => userController.updateUser(req, res)));
+app.put("/users", verifyAccessToken, asyncWrapper((req: Request, res: Response) => userController.updateUser(req, res)));
 
-app.delete("/users/:id", asyncWrapper((req: Request, res: Response) => userController.deleteUser(req, res)));
+app.delete("/users", verifyAccessToken, asyncWrapper((req: Request, res: Response) => userController.deleteUser(req, res)));
 
 
-app.post("/hands/upload/:userId", upload.single('file'), asyncWrapper((req: Request, res: Response) => handController.uploadHandFile(req, res)));
+app.post("/hands/upload", verifyAccessToken, upload.single('file'), asyncWrapper((req: Request, res: Response) => handController.uploadHandFile(req, res)));
 
 app.get("/hands", verifyAccessToken, asyncWrapper((req: Request, res: Response) => handController.getHands(req, res)));
 
-app.get("/hands/:userId/:handId", asyncWrapper((req: Request, res: Response) => handController.getUserHandById(req, res)));
+app.get("/hands/:handId", verifyAccessToken, asyncWrapper((req: Request, res: Response) => handController.getUserHandById(req, res)));
 
-app.delete("/hands/:userId/:handId", asyncWrapper((req: Request, res: Response) => handController.deleteUserHand(req, res)));
-
-
-app.post("/teams/:userId", asyncWrapper((req: Request, res: Response) => teamController.createTeam(req, res)));
-app.get("/teams/:userId", asyncWrapper((req: Request, res: Response) => teamController.getTeamsByUser(req, res)));
-app.get("/teams/:teamName/hands/:userId", asyncWrapper((req: Request, res: Response) => teamController.getTeamHands(req, res)));
-app.delete("/teams/:teamName/:userId", asyncWrapper((req: Request, res: Response) => teamController.deleteTeam(req, res)));
-app.put("/teams/:teamName/:userId", asyncWrapper((req: Request, res: Response) => teamController.updateTeam(req, res)));
-app.get("/teams/:teamName/users/:userId", asyncWrapper((req: Request, res: Response) => teamController.listTeamUsers(req, res)));
+app.delete("/hands/:handId", verifyAccessToken, asyncWrapper((req: Request, res: Response) => handController.deleteUserHand(req, res)));
 
 
-app.post("/invitations/:userId/:teamName", asyncWrapper((req: Request, res: Response) => invitationController.sendInvitation(req, res)));
+app.post("/teams", verifyAccessToken, asyncWrapper((req: Request, res: Response) => teamController.createTeam(req, res)));
+app.get("/teams", verifyAccessToken, asyncWrapper((req: Request, res: Response) => teamController.getTeamsByUser(req, res)));
+app.get("/teams/:teamName/hands", verifyAccessToken, asyncWrapper((req: Request, res: Response) => teamController.getTeamHands(req, res)));
+app.delete("/teams/:teamName", verifyAccessToken, asyncWrapper((req: Request, res: Response) => teamController.deleteTeam(req, res)));
+app.put("/teams/:teamName", verifyAccessToken, asyncWrapper((req: Request, res: Response) => teamController.updateTeam(req, res)));
+app.get("/teams/:teamName/users", verifyAccessToken, asyncWrapper((req: Request, res: Response) => teamController.listTeamUsers(req, res)));
 
-app.get("/invitations/:userId", asyncWrapper((req: Request, res: Response) => invitationController.getPendingInvitations(req, res)));
 
-app.put("/invitations/:userId/:invitationId", asyncWrapper((req: Request, res: Response) => invitationController.respondToInvitation(req, res)));
+app.post("/invitations/:teamName", verifyAccessToken, asyncWrapper((req: Request, res: Response) => invitationController.sendInvitation(req, res)));
+
+app.get("/invitations", verifyAccessToken, asyncWrapper((req: Request, res: Response) => invitationController.getPendingInvitations(req, res)));
+
+app.put("/invitations/:invitationId", verifyAccessToken, asyncWrapper((req: Request, res: Response) => invitationController.respondToInvitation(req, res)));
 
 
 

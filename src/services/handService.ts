@@ -8,7 +8,7 @@ import { UserNotFoundError } from '../errors/userError';
 
 export class HandService {
     private prisma: PrismaClient;
-
+    
     constructor() {
         this.prisma = new PrismaClient();
     }

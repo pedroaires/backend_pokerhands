@@ -9,7 +9,7 @@ export class HandController {
     }
 
     async uploadHandFile(req: Request, res: Response): Promise<Response> {
-        const { userId } = req.params;
+        const { userId } = req.body;
         const file = req.file;
 
         if (!file) {
@@ -23,14 +23,15 @@ export class HandController {
 
     async getHands(req: Request, res: Response): Promise<Response> {
         
-        const { userId } = req.params;
+        const { userId } = req.body;
         const hands = await this.handService.getHandsByUser(userId);
         return res.json({ hands });
     }
 
     async getUserHandById(req: Request, res: Response): Promise<Response> {
     
-        const { handId, userId } = req.params;
+        const { handId } = req.params;
+        const { userId } = req.body;
         if (!userId) {
             return res.status(400).json({ error: 'No user ID provided' });
         }
@@ -45,7 +46,8 @@ export class HandController {
 
 
     async deleteUserHand(req: Request, res: Response): Promise<Response> {
-        const { userId, handId } = req.params;
+        const { handId } = req.params;
+        const { userId } = req.body;
         const deleted = await this.handService.deleteUserHand(userId, handId);
 
         if (!deleted) {
