@@ -22,15 +22,15 @@ model Team {
   name      String  @unique
   users     User[]  @relation("UserTeams")
   ownerId   String
-  owner     User    @relation("TeamOwner", fields: [ownerId], references: [id])
+  owner     User    @relation("TeamOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   invitations Invitation[] @relation("TeamInvitations")
 }
 
 model Invitation {
   id        String        @id @default(uuid())
-  team      Team          @relation("TeamInvitations", fields: [teamId], references: [id]) 
+  team      Team          @relation("TeamInvitations", fields: [teamId], references: [id], onDelete: Cascade) 
   teamId    String
-  invitee   User          @relation("InviteeInvitations", fields: [inviteeId], references: [id])
+  invitee   User          @relation("InviteeInvitations", fields: [inviteeId], references: [id], onDelete: Cascade)
   inviteeId String
   status    InvitationStatus @default(PENDING)
   createdAt DateTime       @default(now())
@@ -64,7 +64,7 @@ model Hand {
   seatMapper    Json          // Maps player IDs to seat numbers and stacks
   events        HandEvent[] @relation("HandEvents")
   ownerId       String        // Owner of the hand
-  owner         User          @relation("UserHands", fields: [ownerId], references: [id])
+  owner         User          @relation("UserHands", fields: [ownerId], references: [id], onDelete: Cascade)
 }
 
 model HandEvent {
