@@ -23,7 +23,6 @@ export const verifyAccessToken = (req: Request, res: Response, next: NextFunctio
             return res.status(403).send({ message: 'Failed to authenticate token' });
         }
         req.body.userId = (decoded as any).userId;
-        console.log('Decoded JWT:', req.body.userId);
         next();
     });
 };
