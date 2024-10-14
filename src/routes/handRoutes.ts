@@ -22,12 +22,105 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 
 
+/**
+ * @swagger
+ * /hands/upload:
+ *   post:
+ *     summary: Upload a file containing poker hands from Hand2Note 4
+ *     tags: [Hands]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: A .txt file from Hand2Note 4 containing multiple poker hands
+ *     responses:
+ *       200:
+ *         description: File uploaded and hands processed successfully
+ *       400:
+ *         description: Invalid file or authentication error
+ */
 handRouter.post("/upload", verifyAccessToken, upload.single('file'), asyncWrapper((req: Request, res: Response) => handController.uploadHandFile(req, res)));
 
+
+/**
+ * @swagger
+ * /hands:
+ *   get:
+ *     summary: Get a list of all hands
+ *     tags: [Hands]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of all hands
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *       401:
+ *         description: Unauthorized access
+ */
 handRouter.get("/", verifyAccessToken, asyncWrapper((req: Request, res: Response) => handController.getHands(req, res)));
 
+/**
+ * @swagger
+ * /hands/{handId}:
+ *   get:
+ *     summary: Get details of a specific hand by ID
+ *     tags: [Hands]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: handId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the hand to retrieve
+ *     responses:
+ *       200:
+ *         description: Details of the requested hand
+ *       404:
+ *         description: Hand not found
+ *       401:
+ *         description: Unauthorized access
+ */
 handRouter.get("/:handId", verifyAccessToken, asyncWrapper((req: Request, res: Response) => handController.getUserHandById(req, res)));
 
+
+/**
+ * @swagger
+ * /hands/{handId}:
+ *   delete:
+ *     summary: Delete a hand by ID
+ *     tags: [Hands]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: handId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the hand to delete
+ *     responses:
+ *       200:
+ *         description: Hand deleted successfully
+ *       404:
+ *         description: Hand not found
+ *       401:
+ *         description: Unauthorized access
+ */
 handRouter.delete("/:handId", verifyAccessToken, asyncWrapper((req: Request, res: Response) => handController.deleteUserHand(req, res)));
 
 export default handRouter;
