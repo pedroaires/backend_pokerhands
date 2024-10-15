@@ -57,4 +57,30 @@ export class HandController {
         return res.json({ message: 'Hand deleted successfully' });
         
     }
+
+    async getHandsBySource(req: Request, res: Response): Promise<Response> {
+        
+        const { userId } = req.body;
+        const source = req.query.source as string;
+        
+        let hands;
+        if (!userId) {
+            return res.status(400).json({ error: 'No user ID provided' });
+        }
+
+        if (source === 'user') {
+            hands = await this.handService.getHandsByUser(userId);
+        } else if (source === 'team') {
+            hands = await this.handService.getAllTeamHands(userId);
+            
+        } else if (source === 'both') {
+            const userHands = await this.handService.getHandsByUser(userId);
+            const teamHands = await this.handService.getAllTeamHands(userId);
+            hands = [...userHands, ...teamHands];
+        } else {
+            return res.status(400).json({ error: 'Invalid source parameter. Expected "user", "team", or "both"' });
+        }
+
+        return res.json({ hands });
+    }
 }

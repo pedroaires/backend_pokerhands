@@ -21,6 +21,15 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+/**
+ * @swagger
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
 
 /**
  * @swagger
@@ -48,7 +57,6 @@ const upload = multer({ storage });
  *         description: Invalid file or authentication error
  */
 handRouter.post("/upload", verifyAccessToken, upload.single('file'), asyncWrapper((req: Request, res: Response) => handController.uploadHandFile(req, res)));
-
 
 /**
  * @swagger
@@ -97,7 +105,6 @@ handRouter.get("/", verifyAccessToken, asyncWrapper((req: Request, res: Response
  */
 handRouter.get("/:handId", verifyAccessToken, asyncWrapper((req: Request, res: Response) => handController.getUserHandById(req, res)));
 
-
 /**
  * @swagger
  * /hands/{handId}:
@@ -122,5 +129,46 @@ handRouter.get("/:handId", verifyAccessToken, asyncWrapper((req: Request, res: R
  *         description: Unauthorized access
  */
 handRouter.delete("/:handId", verifyAccessToken, asyncWrapper((req: Request, res: Response) => handController.deleteUserHand(req, res)));
+
+/**
+ * @swagger
+ * /hands/source:
+ *   post:
+ *     summary: Get hands based on the source (user, team, or both)
+ *     tags: [Hands]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               source:
+ *                 type: string
+ *                 enum: [user, team, both]
+ *                 description: The source of the hands ('user', 'team', or 'both')
+ *               userId:
+ *                 type: string
+ *                 description: The ID of the user
+ *             required:
+ *               - source
+ *               - userId
+ *     responses:
+ *       200:
+ *         description: A list of hands based on the source
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *       400:
+ *         description: Invalid source parameter
+ *       401:
+ *         description: Unauthorized access
+ */
+handRouter.post("/source", verifyAccessToken, asyncWrapper((req: Request, res: Response) => handController.getHandsBySource(req, res)));
 
 export default handRouter;

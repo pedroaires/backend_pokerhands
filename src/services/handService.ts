@@ -12,32 +12,54 @@ export class HandService {
     constructor() {
         this.prisma = new PrismaClient();
     }
-    async processHandFile(file: Express.Multer.File, userId: string): Promise<Hand> {
-        const userExists = await this.prisma.user.findUnique({
-            where: { id: userId }
-        });
 
+    async processHand(handContent: string, userId: string): Promise<Hand> {
+        try {
+            // Parse hand events and metadata
+            const events = this.parseHandEvents(handContent);
+            const handMetadata = this.parseHandMetadata(handContent);
+            
+            // Process and store the hand
+            const { hand, handEvents } = await this.createHand(events, handMetadata, userId);
+            return hand;
+        } catch (error) {
+            console.error('Failed to parse or process hand:', error);
+            throw new HandParseError();
+        }
+    }
+
+    async processHandFile(file: Express.Multer.File, userId: string): Promise<Hand[]> {
+        // Check if the user exists
+        const userExists = await this.prisma.user.findUnique({
+            where: { id: userId },
+        });
+    
         if (!userExists) {
             throw new UserNotFoundError(userId);
         }
+    
         try {
             const filePath = file.path;
             const fileContent = await fs.readFile(filePath, 'utf-8');
-            
-            try {
-                const events = this.parseHandEvents(fileContent);
-                const handMetadata = this.parseHandMetadata(fileContent);
-                const { hand, handEvents } = await this.createHand(events, handMetadata, userId);
-                return hand;
-                
+    
+            // Split the file by empty lines to separate hands
+            const hands = fileContent.split(/\n\s*\n/).filter(Boolean); // Splitting by empty lines
+            const processedHands: Hand[] = [];
+    
+            // Process each hand one by one
+            for (const handContent of hands) {
+                const hand = await this.processHand(handContent, userId);
+                processedHands.push(hand);
             }
-            catch (error) {
-                throw new HandParseError();
-            }
+    
+            return processedHands; // Return all processed hands
         } catch (error) {
+            console.error('Failed to upload and process hands:', error);
             throw new HandUploadFailed();
         }
     }
+    
+
 
     parseHandEvents(handText: string): HandEventInterface[] {
         const lines = handText.split('\n');
@@ -125,6 +147,39 @@ export class HandService {
             }
         });
         
+        return hands;
+    }
+
+    async getAllTeamHands(userId: string): Promise<Hand[]> {
+        
+        const userExists = await this.prisma.user.findUnique({
+            where: { id: userId },
+            include: {
+                teams: {
+                    include: {
+                        users: true,
+                    }
+                }
+            }
+        });
+    
+        if (!userExists) {
+            throw new UserNotFoundError(userId);
+        }
+    
+        
+        const teamUserIds = userExists.teams.flatMap(team => 
+            team.users.map(user => user.id)
+        ).filter(id => id !== userId);  
+    
+        
+        const hands = await this.prisma.hand.findMany({
+            where: {
+                ownerId: {
+                    in: teamUserIds  
+                }
+            }
+        });
         return hands;
     }
 
