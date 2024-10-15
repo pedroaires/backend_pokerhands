@@ -3,15 +3,8 @@ import { PrismaClient, Hand, HandEvent } from '@prisma/client';
 import { HandUploadFailed, HandParseError, HandNotFoundError } from '../errors/handError';
 import { HandMetadataParser, HandMetadata } from '../parser/metadataParser';
 import { createParser } from '../parser/eventParser';
-import { HandEvent as HandEventInterface} from '../parser/handEvent';
+import { HandEvent as HandEventInterface, DealtCardsEvent, BoardChangeEvent, PlayerActionEvent} from '../parser/handEvent';
 import { UserNotFoundError } from '../errors/userError';
-interface DealtCardsEventData {
-    playerId: number;
-    cards: string[];
-  }
-  interface BoardChangeEventData {
-    newBoard: string[];
-  }
   
   
 export class HandService {
@@ -94,7 +87,7 @@ export class HandService {
     async createHand(events: HandEventInterface[], handMetadata: HandMetadata, userId: string): Promise<{ hand: Hand, handEvents: HandEvent[] }> {
         return await this.prisma.$transaction(async (prisma) => {
             const hand = await prisma.hand.create({
-                data:{
+                data: {
                     ownerId: userId,
                     startDateTime: new Date(handMetadata.startDateTime),
                     endDateTime: new Date(handMetadata.endDateTime),
@@ -102,24 +95,27 @@ export class HandService {
                     blinds: {
                         smallBlind: this.extractNumericValue(handMetadata.blinds.smallBlind),
                         bigBlind: this.extractNumericValue(handMetadata.blinds.bigBlind),
-                        ante: handMetadata.blinds.ante? this.extractNumericValue(handMetadata.blinds.ante) : undefined,
+                        ante: handMetadata.blinds.ante ? this.extractNumericValue(handMetadata.blinds.ante) : undefined,
                     },
                     tableId: handMetadata.tableId,
                     clubId: Number(handMetadata.clubId),
                     maxSeats: handMetadata.maxSeats,
                     seatMapper: handMetadata.players.map((player) => ({
-                            seat: player.seat,
-                            playerId: player.playerId,
-                            stack: this.extractNumericValue(player.stack)
-                        }))
-                    ,
+                        seat: player.seat,
+                        playerId: player.playerId,
+                        stack: this.extractNumericValue(player.stack)
+                    })) as { seat: number, playerId: number, stack: number }[],
                     buttonSeat: handMetadata.buttonSeat,
                     players: {
                         create: handMetadata.players.map((player) => ({
                             username: String(player.playerId),
                             clubId: Number(handMetadata.clubId),
                         })),
-                    }
+                    },
+                    totalPot: this.extractNumericValue(handMetadata.totalPot),
+                    rake: this.extractNumericValue(handMetadata.rake),
+                    boards: handMetadata.boards, // Storing the array of board runs
+                    heroCards: handMetadata.heroCards // Storing hero's dealt cards
                 }
             });
     
@@ -139,65 +135,6 @@ export class HandService {
             };
         });
     }
-    isDealtCardsEventData(data: any): data is DealtCardsEventData {
-        return typeof data === 'object' && data !== null && 
-               typeof data.playerId === 'number' && Array.isArray(data.cards);
-    }
-    isBoardChangeEventData(data: any): data is BoardChangeEventData {
-        return typeof data === 'object' && data !== null && Array.isArray(data.newBoard);
-      }
-      
-    extractHeroCards(events: HandEvent[], userId: string): string[] {
-        const dealtCardsEvent = events.find(event => 
-            event.eventType === "DEALT_CARDS" && 
-            event.eventData !== null && // Check that eventData is not null
-            this.isDealtCardsEventData(event.eventData) // Type guard ensures correct type
-            
-        );
-    
-        // Ensure dealtCardsEvent is valid and return cards
-        return dealtCardsEvent ? (dealtCardsEvent.eventData as unknown as DealtCardsEventData).cards : [];
-    }
-    
-
-    extractBoard(events: HandEvent[]): string[] {
-        const boardEvents = events.filter(event => 
-            event.eventType === "BOARD_CHANGE" && 
-            event.eventData !== null && 
-            this.isBoardChangeEventData(event.eventData) // Check if eventData contains newBoard
-        );
-        
-        // Map over the valid boardEvents and flatten the array of newBoard values
-        return boardEvents.length ? boardEvents.map(event => (event.eventData as unknown as BoardChangeEventData).newBoard).flat() : [];
-    }
-    
-
-
-    async getHandWithHeroData(userId: string, handId: string,): Promise<any> {
-        const hand = await this.prisma.hand.findUnique({
-            where: { id: handId },
-            include: { 
-                events: true, // Include all hand events for this hand
-                players: true // Include the players
-            }
-        });
-    
-        if (!hand) {
-            throw new Error('Hand not found');
-        }
-    
-        // Process events to extract hero's cards and board state
-        const heroCards = this.extractHeroCards(hand.events, userId);
-        const board = this.extractBoard(hand.events);
-    
-        // Return the hand along with hero's cards and board state
-        return {
-            ...hand,
-            heroCards,
-            board
-        };
-    }
-    
 
     async getHandsByUser(userId: string): Promise<Hand[]> {
         const userExists = await this.prisma.user.findUnique({
@@ -214,7 +151,17 @@ export class HandService {
             }
         });
         
-        return hands;
+        const handsWithBalance = await Promise.all(
+            (await hands).map(async (hand) => {
+                const balance = await this.computeHeroBalance(hand);
+                return {
+                    ...hand,
+                    balance, // Include the calculated balance for each hand
+                };
+            })
+        );
+        
+        return handsWithBalance;
     }
 
     async getAllTeamHands(userId: string): Promise<Hand[]> {
@@ -299,4 +246,65 @@ export class HandService {
         return deleted
     }
 
+    async computeHeroBalance(hand: Hand): Promise<number> {
+        const handEvents = await this.prisma.handEvent.findMany({
+            where: {
+                handId: hand.id
+            }
+        });
+        const heroId = this.findHeroId(handEvents);
+    
+        const heroSeat = Array.isArray(hand.seatMapper)
+            ? (hand.seatMapper as { seat: number, playerId: number, stack: number }[])
+                  .find(seat => seat.playerId === heroId)
+            : null;
+            
+        if (!heroSeat) {
+            console.log('Hero seat not found');
+            return 0;
+        }
+    
+        let initialStack = heroSeat.stack;
+        let finalStack = initialStack;
+    
+        for (const event of handEvents) {
+            if (event.eventType === 'PLAYER_ACTION') {
+                const parsedEvent = event.eventData as unknown as PlayerActionEvent;
+                
+                
+                if (parsedEvent.playerId === heroId) {
+                    // Deduct stack for bets, calls, raises, posts
+                    if (['bets', 'calls', 'raises', 'posts'].includes(parsedEvent.actionType)) {
+                        finalStack -= parsedEvent.amount;
+                    }
+    
+                    // If hero collected chips, add the amount to the stack
+                    if (parsedEvent.actionType === 'collected') {
+                        finalStack += parsedEvent.amount;
+                    }
+                }
+            }
+        }
+    
+        const balance = finalStack - initialStack;
+        return parseFloat(balance.toFixed(2));
+    }
+
+    findHeroId(events: HandEvent[]): number {
+        const dealtCardsEvent = events.find(event => event.eventType === 'DEALT_CARDS') as unknown as DealtCardsEvent;
+    
+        if (dealtCardsEvent && (dealtCardsEvent as any).eventData) {
+            const eventData = (dealtCardsEvent as any).eventData as { playerId: number; cards: string[] };
+        
+            if (eventData && eventData.playerId) {
+                return eventData.playerId;
+            }
+        }
+
+        throw new Error('Dealt cards event not found');
+
+    }
+    isDealtCardsEventData(data: any): data is DealtCardsEvent {
+        return typeof data === 'object' && data !== null && 'playerId' in data && Array.isArray(data.cards);
+    }
 }

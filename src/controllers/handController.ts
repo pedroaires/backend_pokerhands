@@ -83,11 +83,4 @@ export class HandController {
 
         return res.json({ hands });
     }
-
-    async getHandsWithHeroData(req: Request, res: Response): Promise<Response> {
-        const { userId } = req.body;
-        const { handId } = req.params;
-        const hands = await this.handService.getHandWithHeroData(userId, handId);
-        return res.json({ hands });
-    }
 }
