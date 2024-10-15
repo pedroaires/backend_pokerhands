@@ -9,6 +9,10 @@ export interface HandMetadata {
     maxSeats: number;
     buttonSeat: number;
     players: { seat: number, playerId: number, stack: string }[];
+    totalPot: string;
+    rake: string;
+    boards: string[][];
+    heroCards: string[] | undefined;
 }
 
 export class HandMetadataParser {
@@ -18,13 +22,23 @@ export class HandMetadataParser {
         const playerRegex = /Seat (\d+): (\d+) \((¥[\d.]+) in chips\)/g;
         const endTimeRegex = /Hand ended at ([\d\/: ]+)/;
         const anteRegex = /\((?:¥[\d.]+\/¥[\d.]+(?: - Ante (¥[\d.]+))?) CNY\)/;
-        const anteMatch = handText.match(anteRegex);
+        const totalPotRegex = /Total pot (¥[\d.]+)/;
+        const rakeRegex = /Rake (¥[\d.]+)/;
+        const boardsRegex = /(?:FIRST|SECOND|THIRD)?\s?Board \[([^\]]+)\]/g;
+        const dealtCardsRegex = /Dealt to \S+ \[([^\]]+)\]/;
 
+
+        
         // Extract hand metadata
+        const anteMatch = handText.match(anteRegex);
         const handIdMatch = handText.match(handIdRegex);
         const tableInfoMatch = handText.match(tableInfoRegex);
         const playersMatches = [...handText.matchAll(playerRegex)];
         const endDateMatch = handText.match(endTimeRegex);
+        const totalPotMatch = handText.match(totalPotRegex);
+        const rakeMatch = handText.match(rakeRegex);
+        const boardMatches = [...handText.matchAll(boardsRegex)];
+        const dealtCardsMatch = handText.match(dealtCardsRegex);
 
         if (!handIdMatch || !tableInfoMatch || !endDateMatch) {
             throw new Error('Invalid hand format');
@@ -35,7 +49,8 @@ export class HandMetadataParser {
             playerId: parseInt(match[2], 10),
             stack: match[3]
         }));
-
+        const boards = boardMatches.map(match => match[1].split(' '));
+        const heroCards = dealtCardsMatch ? dealtCardsMatch[1].split(' ') : undefined;  
         return {
             handId: handIdMatch[1],
             gameType: handIdMatch[2].split('(')[0].trim(), // Extracts game type like "5 Card Omaha Pot Limit"
@@ -50,7 +65,11 @@ export class HandMetadataParser {
             tableId: tableInfoMatch[2],
             maxSeats: parseInt(tableInfoMatch[3], 10),
             buttonSeat: parseInt(tableInfoMatch[4], 10),
-            players
+            players,
+            totalPot: totalPotMatch ? totalPotMatch[1] : 'Unknown',
+            rake: rakeMatch ? rakeMatch[1] : 'Unknown',
+            boards,
+            heroCards
         };
     }
 }

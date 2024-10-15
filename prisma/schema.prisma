@@ -65,6 +65,11 @@ model Hand {
   events        HandEvent[] @relation("HandEvents")
   ownerId       String        // Owner of the hand
   owner         User          @relation("UserHands", fields: [ownerId], references: [id], onDelete: Cascade)
+
+  totalPot      Float         
+  rake          Float         
+  boards        Json          
+  heroCards     String[]
 }
 
 model HandEvent {

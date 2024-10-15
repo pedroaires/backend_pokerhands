@@ -33,6 +33,13 @@ describe('HandMetadataParser', () => {
             { seat: 5, playerId: 636899, stack: '¥73.50' },
             { seat: 6, playerId: 1176294, stack: '¥44.50' }
         ]);
+
+        expect(metadata.totalPot).toBe('¥6.30');
+        expect(metadata.rake).toBe('¥0.35');
+        expect(metadata.boards).toStrictEqual([
+            ['5s', 'Kd', '3c']  // First board (only one in this hand)
+        ]);
+        expect(metadata.heroCards).toStrictEqual(['Qd', '7c', '4c', '8c', '6s']);
     });
 
     it('should extract the hand metadata for handExamples[1]', () => {
@@ -59,6 +66,12 @@ describe('HandMetadataParser', () => {
             { seat: 5, playerId: 798076, stack: '¥120.50' },
             { seat: 6, playerId: 657898, stack: '¥89' }
         ]);
+
+        expect(metadata.totalPot).toBe('¥51.15');
+        expect(metadata.rake).toBe('¥3.10');
+        expect(metadata.boards).toStrictEqual([['4d', 'Jd', '4c', 'Jc', '3d']]);
+        expect(metadata.heroCards).toStrictEqual(['As', '3h', '5h', '4h', 'Qs']);
+
     });
 
     it('should extract the hand metadata for handExamples[2]', () => {
@@ -84,6 +97,12 @@ describe('HandMetadataParser', () => {
             { seat: 5, playerId: 299983, stack: '¥188.30' },
             { seat: 6, playerId: 624545, stack: '¥55.35' }
         ]);
+
+        expect(metadata.totalPot).toBe('¥16');
+        expect(metadata.rake).toBe('¥0.80');
+        expect(metadata.boards).toStrictEqual([['Kh', '6h', 'Js', 'Jh']]);
+        expect(metadata.heroCards).toStrictEqual(undefined);
+
     });
 
     it('should extract the hand metadata for handExamples[3]', () => {
@@ -110,6 +129,11 @@ describe('HandMetadataParser', () => {
             { seat: 5, playerId: 299983, stack: '¥238.35' },
             { seat: 6, playerId: 885662, stack: '¥123.15' }
         ]);
+        expect(metadata.totalPot).toBe('¥104');
+        expect(metadata.rake).toBe('¥5.50');
+        expect(metadata.boards).toStrictEqual([['7s', '5s', 'Ah', '2h', '5d']]);
+        expect(metadata.heroCards).toStrictEqual(['6d', '8h', '9s', 'Ks', 'As']);
+
     });
 
     it('should extract the hand metadata for handExamples[4]', () => {
@@ -135,6 +159,15 @@ describe('HandMetadataParser', () => {
             { seat: 4, playerId: 1168207, stack: '¥119' },
             { seat: 5, playerId: 299983, stack: '¥243.85' }
         ]);
+
+        expect(metadata.totalPot).toBe('¥53.50');
+        expect(metadata.rake).toBe('¥3.20');
+        expect(metadata.boards).toStrictEqual([
+            ['4c', '9h', 'Js', 'Ks', 'Ad'],
+            ['7c', 'As', '2d', '6h', '2h']
+        ]);
+        expect(metadata.heroCards).toStrictEqual(['9s', 'Th', 'Tc', 'Kd', '8s']);
+
     });
 
     it('should extract the hand metadata for handExamples[5]', () => {
@@ -161,5 +194,11 @@ describe('HandMetadataParser', () => {
             { seat: 5, playerId: 798076, stack: '¥77.65' },
             { seat: 6, playerId: 657898, stack: '¥106.30' }
         ]);
+        expect(metadata.totalPot).toBe('¥22.50');
+        expect(metadata.rake).toBe('¥1.65');
+        expect(metadata.boards).toStrictEqual([['8s', 'Qs', '2d', '2c']]);
+        expect(metadata.heroCards).toStrictEqual(['5s', '2h', 'Jd', 'Qh', '4s']);
+
     });
+    
 });
