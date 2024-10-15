@@ -5,7 +5,15 @@ import { HandMetadataParser, HandMetadata } from '../parser/metadataParser';
 import { createParser } from '../parser/eventParser';
 import { HandEvent as HandEventInterface} from '../parser/handEvent';
 import { UserNotFoundError } from '../errors/userError';
-
+interface DealtCardsEventData {
+    playerId: number;
+    cards: string[];
+  }
+  interface BoardChangeEventData {
+    newBoard: string[];
+  }
+  
+  
 export class HandService {
     private prisma: PrismaClient;
     
@@ -131,6 +139,65 @@ export class HandService {
             };
         });
     }
+    isDealtCardsEventData(data: any): data is DealtCardsEventData {
+        return typeof data === 'object' && data !== null && 
+               typeof data.playerId === 'number' && Array.isArray(data.cards);
+    }
+    isBoardChangeEventData(data: any): data is BoardChangeEventData {
+        return typeof data === 'object' && data !== null && Array.isArray(data.newBoard);
+      }
+      
+    extractHeroCards(events: HandEvent[], userId: string): string[] {
+        const dealtCardsEvent = events.find(event => 
+            event.eventType === "DEALT_CARDS" && 
+            event.eventData !== null && // Check that eventData is not null
+            this.isDealtCardsEventData(event.eventData) // Type guard ensures correct type
+            
+        );
+    
+        // Ensure dealtCardsEvent is valid and return cards
+        return dealtCardsEvent ? (dealtCardsEvent.eventData as unknown as DealtCardsEventData).cards : [];
+    }
+    
+
+    extractBoard(events: HandEvent[]): string[] {
+        const boardEvents = events.filter(event => 
+            event.eventType === "BOARD_CHANGE" && 
+            event.eventData !== null && 
+            this.isBoardChangeEventData(event.eventData) // Check if eventData contains newBoard
+        );
+        
+        // Map over the valid boardEvents and flatten the array of newBoard values
+        return boardEvents.length ? boardEvents.map(event => (event.eventData as unknown as BoardChangeEventData).newBoard).flat() : [];
+    }
+    
+
+
+    async getHandWithHeroData(userId: string, handId: string,): Promise<any> {
+        const hand = await this.prisma.hand.findUnique({
+            where: { id: handId },
+            include: { 
+                events: true, // Include all hand events for this hand
+                players: true // Include the players
+            }
+        });
+    
+        if (!hand) {
+            throw new Error('Hand not found');
+        }
+    
+        // Process events to extract hero's cards and board state
+        const heroCards = this.extractHeroCards(hand.events, userId);
+        const board = this.extractBoard(hand.events);
+    
+        // Return the hand along with hero's cards and board state
+        return {
+            ...hand,
+            heroCards,
+            board
+        };
+    }
+    
 
     async getHandsByUser(userId: string): Promise<Hand[]> {
         const userExists = await this.prisma.user.findUnique({

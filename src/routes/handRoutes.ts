@@ -171,4 +171,9 @@ handRouter.delete("/:handId", verifyAccessToken, asyncWrapper((req: Request, res
  */
 handRouter.post("/source", verifyAccessToken, asyncWrapper((req: Request, res: Response) => handController.getHandsBySource(req, res)));
 
+
+handRouter.get("/withHeroData/:handId", verifyAccessToken, asyncWrapper((req: Request, res: Response) => handController.getHandsWithHeroData(req, res)));
+
+
+
 export default handRouter;
